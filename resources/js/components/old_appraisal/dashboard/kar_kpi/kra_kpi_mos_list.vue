@@ -1,0 +1,1490 @@
+<template>
+  <div>
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <div class="content-header row">
+          <div class="content-header-left col-12 mb-1 mt-0">
+            <div class="row breadcrumbs-top">
+              <div class="col-sm-9">
+                <div class="breadcrumb-wrapper col-9">
+                  <ol class="breadcrumb p-0 mb-0">
+                    <li class="breadcrumb-item">
+                      <router-link :to="{ path: '/' }"
+                        ><i class="bx bx-home-alt"></i>
+                      </router-link>
+                    </li>
+                    <li class="breadcrumb-item active">KRA , KPI and MOS</li>
+                  </ol>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <!-- <router-link class="btn btn-primary add-btn" :to="{ path: '/add_daily_work' }"> <i class="bx bx-add-alt"></i> Add daily work </router-link> -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content-body">
+          <section id="basic-datatable">
+            <div class="users-list-filter px-1">
+              <div class="row border rounded py-2 mb-2">
+                <div class="col-md-12">
+                    <div class="row report-box">    
+                       <div class="form-group col-md-3" >
+                          <label class="col-md-12 control-label" style="padding: 0px;">SBU <sup style="color:red; top: -2px;">*</sup></label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group">
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                              <vue-select v-model="sbu_name_value" :options="sbuSelect2Aarry" @select="employeesSbu" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+                       <div class="form-group col-md-3" >
+                          <label class="col-md-12 control-label" style="padding:0px;">Unit</label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group">
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                              <vue-select v-model="unit_value" :options="unitSelect2Aarry" @select="employeesUnit" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+                       <div class="form-group col-md-3" >
+                          <label class="col-md-12 control-label" style="padding:0px;">Sub Unit</label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group">
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                              <vue-select v-model="sub_unit_value" :options="subUnitSelect2Aarry" @select="employeesSubUnit" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+
+                       <div class="form-group col-md-3" >
+                          <label class="col-md-12 control-label" style="padding:0px;">Department</label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group">
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                              <vue-select v-model="department_name_value" :options="departmentSelect2Aarry" @select="onSelectDepartment" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+                       <div class="form-group col-md-3" >
+                          <label class="col-md-12 control-label" style="padding:0px;">Section</label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group">
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                              <vue-select v-model="section_value" :options="sectionSelect2Aarry" @select="employeesSection" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+                       <div class="form-group col-md-3" >
+                          <label class="col-md-12 control-label" style="padding:0px;">Sub Section</label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group">
+                              <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                              <vue-select v-model="sub_section_value" :options="subSectionSelect2Aarry" @select="employeesSubSection" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+                       <div class="form-group col-md-3"  >
+                          <label class="col-md-12 control-label" style="padding:0px;">Work Loc.</label>
+                          <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                             <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                              <vue-select v-model="work_location_value" :options="workLocationSelect2Aarry" @select="employeesWorkLocation" placeholder="Select one" label="text" track-by="text"></vue-select>
+                            </div>
+                          </div>
+                       </div>
+
+                        <div class="form-group col-md-3" >
+                           <label class="col-md-6 control-label" style="padding:0px;">Employee</label>
+                           <div class="col-md-12 inputGroupContainer" style="padding:0px;">
+                              <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
+                               <vue-select v-model="employee_name_value" :options="employeeSelect2Aarry" @select="onSelectEmployee" placeholder="Select one" label="text" track-by="text"></vue-select>
+                             </div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                
+                <div
+                  
+                  class="col-12 col-sm-6 col-lg-2"
+                >
+                  <label for="users-list-verified">Department</label>
+                  <fieldset class="form-group">
+                    <select
+                      class="form-control"
+                      v-on:change="getItems()"
+                      v-model="filterForm.dept_id"
+                      id="users-list-verified"
+                    >
+                      <option>Select One</option>
+                      <option
+                        v-for="row in deptItems"
+                        :key="row.id"
+                        :value="row.id"
+                      >
+                        {{ row.department_name }}
+                      </option>
+                    </select>
+                  </fieldset>
+                </div>
+
+                <!---FILTER-->
+                <div class="col-12 col-sm-12">
+                  <div
+                    class="form-inline justify-content-center row"
+                    style="padding-top: 10px"
+                  >
+                    <label class="mb-2 mr-sm-2 col-1"
+                      >Show <strong>KRA</strong>
+                      <input
+                        type="checkbox"
+                        checked=""
+                        value="0"
+                        v-model="filterForm.show_kra"
+                    /></label>
+                    <label class="mb-2 mr-sm-2 col-1"
+                      >Show <strong>KPI</strong>
+                      <input
+                        type="checkbox"
+                        checked=""
+                        value="0"
+                        v-model="filterForm.show_kpi"
+                    /></label>
+                    <label class="mb-2 mr-sm-2 col-1"
+                      >Show <strong>MOS</strong>
+                      <input
+                        type="checkbox"
+                        checked=""
+                        value="0"
+                        v-model="filterForm.show_mos"
+                    /></label>
+                    <label class="mb-2 mr-sm-2 col-1"
+                      >Show <strong>Y.Achi.%</strong>
+                      <input
+                        type="checkbox"
+                        value="0"
+                        v-model="filterForm.show_yachi"
+                    /></label>
+
+                    <label class="mb-2 mr-sm-2 col-1">
+                      Download
+                      <vue-excel-xlsx
+                        :data="dataItemExel"
+                        :columns="columns"
+                        :filename="'KRA KPI List'"
+                        :sheetname="'Target'"
+                      >
+                        <p class="bx bxs-cloud-download"></p>
+                      </vue-excel-xlsx>
+                    </label>
+                  </div>
+
+                  <!-- <download-excel :data="json_data" :columns="json_fields">
+                                        Download Data
+                                        <img src="download_icon.png" />
+                                      </download-excel> -->
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="card-body card-dashboard">
+                      <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                          <thead class="thead-dark">
+                            <tr>
+                              <th v-if="filterForm.show_kra == 1">KRA</th>
+                              <th v-if="filterForm.show_kra == 1">Weightage</th>
+                              <th v-if="filterForm.show_kpi == 1">KPI</th>
+                              <th v-if="filterForm.show_mos == 1">MOS</th>
+                              <th>Jan</th>
+                              <th>Feb</th>
+                              <th>Mar</th>
+                              <th>Apr</th>
+                              <th>May</th>
+                              <th>Jun</th>
+                              <th>Jul</th>
+                              <th>Aug</th>
+                              <th>Sep</th>
+                              <th>Oct</th>
+                              <th>Nov</th>
+                              <th>Dec</th>
+                              <th>
+                                Action
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <template v-for="(item, index) in items" :key="item.id">
+                              <tr>
+                                <td
+                                  :rowspan="rowVisible(index, item, 'kra')"
+                                  v-if="
+                                    filterForm.show_kra == 1 &&
+                                    (items[index > 0 ? index - 1 : 0].kra_id !=
+                                      item.kra_id ||
+                                      index == 0)
+                                  "
+                                >
+                                  {{
+                                    item.krajoin ? item.krajoin.kra_name : ""
+                                  }}
+                                </td>
+                                <td
+                                  :rowspan="rowVisible(index, item, 'kra')"
+                                  v-if="
+                                    filterForm.show_kra == 1 &&
+                                    (items[index > 0 ? index - 1 : 0].kra_id !=
+                                      item.kra_id ||
+                                      index == 0)
+                                  "
+                                >
+                                  {{
+                                    item.krajoin ? item.krajoin.kra_weight : ""
+                                  }}
+                                </td>
+                                <td
+                                  :rowspan="rowVisible(index, item, 'kpi')"
+                                  v-if="
+                                    filterForm.show_kpi == 1 &&
+                                    (items[index > 0 ? index - 1 : 0].kpi_id !=
+                                      item.kpi_id ||
+                                      index == 0)
+                                  "
+                                >
+                                  {{
+                                    item.kpijoin ? item.kpijoin.kpi_name : ""
+                                  }}
+                                </td>
+                                <!-- <td v-if="filterForm.show_mos==1">{{ item.mos_name }}  ({{ Number(moduleTotal(item)).toFixed(2) }}) </td> -->
+                                <td v-if="filterForm.show_mos == 1">
+                                  {{ item.mos_name }}
+                                </td>
+                                <!-- <td :rowspan="item.kra_count"
+                                                                    v-if="items[index > 0 ? index - 1 : 0 ].kra_id != item.kra_id || index ==0">
+                                                                    {{ item.krajoin ? item.krajoin.kra_name : '' }}</td>
+                                                                <td :rowspan="item.kra_count"
+                                                                    v-if="items[index > 0 ? index - 1 : 0 ].kra_id != item.kra_id || index ==0">
+                                                                    {{ item.krajoin ? item.krajoin.kra_weight : '' }}
+                                                                </td>
+                                                                <td :rowspan="item.kpi_count"
+                                                                    v-if="items[index > 0 ? index - 1 : 0 ].kpi_id != item.kpi_id || index ==0">
+                                                                    {{ item.kpijoin ? item.kpijoin.kpi_name : '' }}</td>
+                                                                <td>{{ item.mos_name }}</td> -->
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.january
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.february
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.march
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.april
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.may
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.june
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.july
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.august
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.september
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.october
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.november
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td>
+                                  <i
+                                    v-if="
+                                      item.mostargetjoin
+                                        ? item.mostargetjoin.december
+                                        : 0 > 0
+                                    "
+                                    class="bx bx-map"
+                                  ></i>
+                                </td>
+                                <td >
+                                  <div class="dropup">
+                                    <span
+                                      class="
+                                        bx bx-dots-vertical-rounded
+                                        font-medium-3
+                                        dropdown-toggle
+                                        nav-hide-arrow
+                                        cursor-pointer
+                                      "
+                                      data-toggle="dropdown"
+                                      aria-haspopup="true"
+                                      aria-expanded="false"
+                                      role="menu"
+                                    >
+                                    </span>
+                                    <div
+                                      class="dropdown-menu dropdown-menu-right"
+                                    >
+                                      <!--- KRA EDIT -->
+                                      <a
+                                        @click="editKra(item)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-edit-alt mr-1"> </i>
+                                        KRA Edit
+                                      </a>
+
+                                      <!--- KRA DELETE -->
+                                      <a
+                                        @click="delete_kra(item.kra_id)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-trash mr-1"> </i>
+                                        KRA Delete
+                                      </a>
+
+                                      <!--- KPI ADD -->
+                                      <a
+                                        @click="addKpi(item)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-edit-alt mr-1"> </i>
+                                        KPI Add
+                                      </a>
+
+                                      <!--- KPI EDIT -->
+                                      <a
+                                        @click="editKpi(item)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-edit-alt mr-1"> </i>
+                                        KPI Edit
+                                      </a>
+
+                                      <!--- KPI DELETE -->
+                                      <a
+                                        @click="delete_kpi(item.kpi_id)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-trash mr-1"> </i>
+                                        KPI Delete
+                                      </a>
+
+                                      <!--- MOS ADD -->
+                                      <a
+                                        @click="addMos(item)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-edit-alt mr-1"> </i>
+                                        MOS Add
+                                      </a>
+
+                                      <!--- MOS EDIT -->
+                                      <a
+                                        @click="editMos(item)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-edit-alt mr-1"> </i>
+                                        MOS Edit
+                                      </a>
+
+                                      <!--- MOS DELETE -->
+                                      <a
+                                        @click="delete_mos(item.id)"
+                                        class="dropdown-item"
+                                      >
+                                        <i class="bx bx-trash mr-1"> </i>
+                                        MOS Delete
+                                      </a>
+
+                                      <!-- <a class="dropdown-item" @click="add_kpi(item )"><i class="bx bxs-comment-add mr-1"></i> Add || Edit KPI </a>   -->
+                                      <router-link
+                                        class="dropdown-item"
+                                        :to="{
+                                          path:
+                                            '/measure_of_success/' +
+                                            item.kpi_id,
+                                        }"
+                                      >
+                                        <i class="bx bx-edit-alt mr-1"></i> MOS
+                                        Target
+                                      </router-link>
+                                    </div>
+                                  </div>
+
+                                  <!-- <button class="btn btn-success btn-sm" > Add || Edit KPI  </button>
+                                                                    <router-link class="btn btn-primary add-btn" :to="{ path: '/measure_of_success/'+ item.kpi_id }"> <i class="bx bx-add-alt"></i>MOS  </router-link> 
+                                                                     <a class="btn btn-primary btn-sm" href="https://bpt.ssgbd.com/value_fwr/125/378">FWR</a>   -->
+                                </td>
+                              </tr>
+                            </template>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <modal
+            width="60%"
+            height="70%"
+            style="padding: 50px"
+            name="popup-singel"
+          >
+            <i @click="hide_pop()" class="bx bx-x-circle x-circle"></i>
+            <div class="app-content">
+              <div class="card">
+                <table class="table table-bordered table-striped table-sm">
+                  <tbody>
+                    <tr>
+                      <td>KRA Name</td>
+                      <td>{{ item.krajoin ? item.krajoin.kra_name : "" }}</td>
+                    </tr>
+                    <tr>
+                      <td>KPI Name</td>
+                      <td>{{ item.kpijoin ? item.kpijoin.kpi_name : "" }}</td>
+                    </tr>
+                    <tr>
+                      <td>MOS Name</td>
+                      <td>{{ item.mos_name }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- <form @submit.prevent="create()">
+                                <div class="card-body"> 
+                                     
+                                    <div class="form-group ">
+                                        <div   class="input wrapper flex items-center label_2" >
+                                            <label class="text-gray-600 font-semibold text-lg">KPI  </label>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                    <div class="controls">
+                                                        <input type="text" v-model="item.name" class="form-control"  placeholder="Entry kpi">
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                    <div class="controls">
+                                                        <input type="text" v-model="item.kpi_weight"  class="form-control"  placeholder="KPI WEIGHTAGE">
+                                                    </div>
+                                                    </div>
+                                                </div> 
+                                            </div> 
+                                            
+                                        </div>
+                                    </div>   
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>  
+                            </form>  -->
+              </div>
+            </div>
+          </modal>
+
+          <!-- EDIT KRA MODAL -->
+          <modal width="60%" height="70%" style="padding: 50px" name="kraedit">
+            <i @click="hide_pop()" class="bx bx-x-circle x-circle"></i>
+            <div class="app-content">
+              <div class="card">
+                <form @submit.prevent="updateKra()">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >KRA Name
+                            </label>
+                            <div class="controls">
+                              <input type="hidden" v-model="kra_id" />
+                              <input
+                                type="text"
+                                v-model="kra_name"
+                                class="form-control"
+                                placeholder="KRA Name"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >KRA Weightage
+                            </label>
+                            <div class="controls">
+                              <input
+                                type="text"
+                                v-model="kra_weight"
+                                class="form-control"
+                                placeholder="KRA WEIGHTAGE"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </modal>
+
+          <!-- EDIT KPI MODAL -->
+          <modal width="60%" height="70%" style="padding: 50px" name="kpiedit">
+            <i @click="hide_pop()" class="bx bx-x-circle x-circle"></i>
+            <div class="app-content">
+              <div class="card">
+                <form @submit.prevent="updateKpi()">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >KPI Name
+                            </label>
+                            <div class="controls">
+                              <input type="hidden" v-model="kra_id" />
+                              <input type="hidden" v-model="kpi_id" />
+                              <input
+                                type="text"
+                                v-model="kpi_name"
+                                class="form-control"
+                                placeholder="KPI Name"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >KPI Weightage
+                            </label>
+                            <div class="controls">
+                              <input
+                                type="text"
+                                v-model="kpi_weight"
+                                class="form-control"
+                                placeholder="KPI WEIGHTAGE"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </modal>
+
+          <!-- ADD KPI MODAL -->
+          <modal width="60%" height="70%" style="padding: 50px" name="kpiadd">
+            <i @click="hide_pop()" class="bx bx-x-circle x-circle"></i>
+            <div class="app-content">
+              <div class="card">
+                <form @submit.prevent="addNewKpi()">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >KPI Name
+                            </label>
+                            <div class="controls">
+                              <input type="hidden" v-model="kra_id" />
+                              <input
+                                type="text"
+                                v-model="kpi_name"
+                                class="form-control"
+                                placeholder="KPI Name"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >KPI Weightage
+                            </label>
+                            <div class="controls">
+                              <input
+                                type="text"
+                                v-model="kpi_weight"
+                                class="form-control"
+                                placeholder="KPI WEIGHTAGE"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Add New
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </modal>
+
+          <!-- ADD NEW MOS -->
+          <modal width="60%" height="70%" style="padding: 50px" name="mosadd">
+            <i @click="hide_pop()" class="bx bx-x-circle x-circle"></i>
+            <div class="app-content">
+              <div class="card">
+                <form @submit.prevent="addNewMos()">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >MOS Name
+                            </label>
+                            <div class="controls">
+                              <input type="hidden" v-model="kra_id" />
+                              <input type="hidden" v-model="kpi_id" />
+                              <input
+                                type="text"
+                                v-model="mos_name"
+                                class="form-control"
+                                placeholder="MOS Name"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >MOS Weightage
+                            </label>
+                            <div class="controls">
+                              <input
+                                type="text"
+                                v-model="mos_weight"
+                                class="form-control"
+                                placeholder="MOS WEIGHTAGE"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Add New
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </modal>
+
+          <!-- EDIT MOS MODAL -->
+          <modal width="60%" height="70%" style="padding: 50px" name="mosedit">
+            <i @click="hide_pop()" class="bx bx-x-circle x-circle"></i>
+            <div class="app-content">
+              <div class="card">
+                <form @submit.prevent="updateMos()">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >MOS Name
+                            </label>
+                            <div class="controls">
+                              <input type="hidden" v-model="mos_id" />
+                              <input type="hidden" v-model="kpi_id" />
+                              <input
+                                type="text"
+                                v-model="mos_name"
+                                class="form-control"
+                                placeholder="MOS Name"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="text-gray-600 font-semibold text-lg"
+                              >MOS Weightage
+                            </label>
+                            <div class="controls">
+                              <input
+                                type="text"
+                                v-model="mos_weight"
+                                class="form-control"
+                                placeholder="KPI WEIGHTAGE"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </modal>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+
+<script>
+import axios from "../../axios_instance";
+import { Form } from "vform";
+// import JsonExcel from "vue-json-excel"
+export default {
+  props: {},
+  components: {
+    // "downloadExcel": JsonExcel
+    //VueExcelXlsx
+    // VueRecaptcha, facebookLogin
+  },
+  data() {
+    return {
+      //Jan	Feb	Mar	Apr	May	Jun	Jul	Aug	Sep	Oct	Nov	Dec
+      columns: [
+        {
+          label: "KRA",
+          field: "krajoin",
+          dataFormat: this.kraName,
+          rowspan: 4,
+        },
+        {
+          label: "KRA Weightage",
+          field: "krajoin",
+          dataFormat: this.weightageValue,
+        },
+        {
+          label: "KPI",
+          field: "kpijoin",
+          dataFormat: this.kpiName,
+        },
+        {
+          label: "KPI Weightage",
+          field: "kpijoin",
+          dataFormat: this.kpiweightageValue,
+        },
+        {
+          label: "MOS",
+          field: "mos_name",
+        },
+        {
+          label: "MOS Weightage",
+          field: "weightage",
+        },
+        {
+          label: "Jan",
+          field: "mostargetjoin",
+          dataFormat: this.targetJan,
+        },
+        {
+          label: "Fen",
+          field: "mostargetjoin",
+          dataFormat: this.targetFeb,
+        },
+        {
+          label: "Mar",
+          field: "mostargetjoin",
+          dataFormat: this.targetMar,
+        },
+        {
+          label: "Apr",
+          field: "mostargetjoin",
+          dataFormat: this.targetApr,
+        },
+        {
+          label: "May",
+          field: "mostargetjoin",
+          dataFormat: this.targetMay,
+        },
+        {
+          label: "Jun",
+          field: "mostargetjoin",
+          dataFormat: this.targetJun,
+        },
+        {
+          label: "Jul",
+          field: "mostargetjoin",
+          dataFormat: this.targetJul,
+        },
+        {
+          label: "Aug",
+          field: "mostargetjoin",
+          dataFormat: this.targetAug,
+        },
+        {
+          label: "Sep",
+          field: "mostargetjoin",
+          dataFormat: this.targetSep,
+        },
+        {
+          label: "Oct",
+          field: "mostargetjoin",
+          dataFormat: this.targetOct,
+        },
+        {
+          label: "Nov",
+          field: "mostargetjoin",
+          dataFormat: this.targetNov,
+        },
+        {
+          label: "Dec",
+          field: "mostargetjoin",
+          dataFormat: this.targetDec,
+        },
+      ],
+      dataItemExel: [],
+      sbuSelect2Aarry: [],
+      unitSelect2Aarry: [],
+      subUnitSelect2Aarry: [],
+      departmentSelect2Aarry: [],
+      sectionSelect2Aarry: [],
+      subSectionSelect2Aarry: [],
+      workLocationSelect2Aarry: [],
+      employeeSelect2Aarry: [],
+
+      json_fields: {
+        "Complete name": "name",
+        City: "city",
+        Telephone: "phone.mobile",
+        "Telephone 2": {
+          field: "phone.landline",
+          callback: (value) => {
+            return `Landline Phone - ${value}`;
+          },
+        },
+      },
+      json_data: [
+        {
+          name: "Tony Peña",
+          city: "New York",
+          country: "United States",
+          birthdate: "1978-03-15",
+          phone: {
+            mobile: "1-541-754-3010",
+            landline: "(541) 754-3010",
+          },
+        },
+        {
+          name: "Thessaloniki",
+          city: "Athens",
+          country: "Greece",
+          birthdate: "1987-11-23",
+          phone: {
+            mobile: "+1 855 275 5071",
+            landline: "(2741) 2621-244",
+          },
+        },
+      ],
+      json_meta: [
+        [
+          {
+            key: "charset",
+            value: "utf-8",
+          },
+        ],
+      ],
+
+      base_url: window.base_url,
+      api_url: window.api_url,
+      // token: this.$localStorage.get("d_token"),
+      user_data: JSON.parse(this.$localStorage.get("user")).data,
+      role_id: "",
+      items: [],
+      item: [],
+      deptItems: [],
+
+      filterForm: new Form({
+        dept_id: this.$route.query.dept_id ? this.$route.query.dept_id : "",
+        kra_id: this.$route.query.kra_id ? this.$route.query.kra_id : "",
+        kpi_id: "",
+        quarter: this.$route.query.quarter ? this.$route.query.quarter : "",
+        month: this.$route.query.month ? this.$route.query.month : "",
+        show_kra: 1,
+        show_kpi: 1,
+        show_mos: 1,
+        show_yachi: 1,
+      }),
+      kpiForm: new Form({
+        dept_id: "",
+      }),
+
+      status: "",
+
+      year: 2022,
+
+      //KRA INITIAL DATA
+      kra_id: "",
+      kra_name: "",
+      kra_weight: "",
+      editKraForm: new Form({}),
+
+      //KPOI INITIAL DATA
+      kpi_id: "",
+      kpi_name: "",
+      kpi_weight: "",
+      editKpiForm: new Form({}),
+      addKpiForm: new Form({}),
+
+      //MOS INITIAL DATA
+      mos_id: "",
+      mos_name: "",
+      mos_weight: "",
+      editMosForm: new Form({}),
+      addMosForm: new Form({}),
+    };
+  },
+  created() {
+    // this.role_id = this.user_data.role_id;
+    // if (
+    //   this.role_id == 1 ||
+    //   this.role_id == 2 ||
+    //   this.role_id == 3 ||
+    //   this.role_id == 4
+    // ) {
+      this.getDept();
+      this.getSbuSelect2();
+      this.getUnitSelect2();
+      this.getSubUnitSelect2();
+      this.getDeptSelect2();
+      this.getSectionSelect2();
+      this.getSubSectionSelect2();
+      this.getWorkLocationSelect2();
+      this.getEmployeeSelect2();
+    // } else {
+    //   //this.getItems();
+      this.filterForm.dept_id = this.user_data.department;
+    //   this.getItems();
+    // }
+    // this.getItems();
+  },
+  methods: {
+    kpiName(value) {
+      return value.kpi_name;
+    },
+    weightageValue(value) {
+      return value.kra_weight;
+    },
+    kpiweightageValue(value) {
+      return value.kpi_weight;
+    },
+    kraName(value) {
+      return value.kra_name;
+    },
+    //Jan	Feb	Mar	Apr	May	Jun	Jul	Aug	Sep	Oct	Nov	Dec
+    targetJan(e) {
+      return e.january > 0 ? e.january : "";
+    },
+    targetFeb(e) {
+      return e.february > 0 ? e.february : "";
+    },
+    targetMar(e) {
+      return e.march > 0 ? e.march : "";
+    },
+    targetApr(e) {
+      return e.april > 0 ? e.april : "";
+    },
+    targetMay(e) {
+      return e.may > 0 ? e.may : "";
+    },
+    targetJun(e) {
+      return e.june > 0 ? e.june : "";
+    },
+    targetJul(e) {
+      return e.july > 0 ? e.july : "";
+    },
+    targetAug(e) {
+      return e.august > 0 ? e.august : "";
+    },
+    targetSep(e) {
+      return e.september > 0 ? e.september : "";
+    },
+    targetOct(e) {
+      return e.october > 0 ? e.october : "";
+    },
+    targetNov(e) {
+      return e.november > 0 ? e.november : "";
+    },
+    targetDec(e) {
+      return e.december > 0 ? e.december : "";
+    },
+
+    hide_pop() {
+      this.$modal.hide("popup-singel");
+      this.$modal.hide("kraedit");
+      this.$modal.hide("kpiedit");
+      this.$modal.hide("mosedit");
+      this.$modal.hide("kpiadd");
+      this.$modal.hide("mosadd");
+    },
+    add_kpi(item) {
+      this.item = item;
+      this.$modal.show("popup-singel");
+    },
+    checkConditionKra(length, kpi_index, mos_index) {
+      if (kpi_index == 0 && mos_index == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    checkConditionKpi(length, mos_index) {
+      if (mos_index == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    rowVisible(index, item, type) {
+      let crount = 0;
+      this.items.filter((row) => {
+        if (type == "kra") {
+          if (row.kra_id === item.kra_id) {
+            crount += 1;
+          }
+        } else if (type == "kpi") {
+          if (row.kpi_id === item.kpi_id) {
+            crount += 1;
+          }
+        }
+      });
+      return crount;
+    },
+    async getItems() {
+      if (this.filterForm.dept_id != "") {
+        let where = "";
+                //ADD YEAR PARAM
+        where = "?year=" + (this.year ? this.year : new Date().getFullYear());
+
+        if (this.filterForm.dept_id) {
+          where += "&dept_id=" + this.filterForm.dept_id;
+        }
+        let loader = this.$loading.show();
+        try {
+          await axios
+            .get(this.api_url + "kra_kpi_mos_list" + where, {
+              headers: {
+                "Content-Type": "application/json",
+                // Authorization: this.token ? `Bearer ${this.token}` : "",
+              },
+            })
+            .then(({ data }) => {
+              if (data.success) {
+                this.items = data.data;
+                this.dataItemExel = data.data;
+                console.log(this.items);
+              }
+              loader.hide();
+            });
+        } catch (error) {
+          loader.hide();
+        }
+      }
+    },
+
+    async getDept() {
+      let loader = this.$loading.show();
+      this.getDepartments(this.status).then(({ data }) => {
+        if (data.success) {
+          loader.hide();
+          this.deptItems = data.data;
+          //this.getItems();
+        } else {
+          loader.hide();
+        }
+      });
+    },
+    
+
+    //EDIT KRA
+    async editKra(item) {
+      this.kra_id = item.kra_id;
+      this.kra_name = item.krajoin.kra_name;
+      this.kra_weight = item.krajoin.kra_weight;
+      this.$modal.show("kraedit");
+    },
+
+    //UPDATE KRA
+    async updateKra() {
+      this.editKraForm.id = this.kra_id;
+      this.editKraForm.kra_name = this.kra_name;
+      this.editKraForm.kra_weight = this.kra_weight;
+      this.editKraForm
+        .put(this.api_url + "k_r_a_s/" + this.kra_id, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+
+          //HIDE MODAL
+          this.$modal.hide("kraedit");
+
+          //DATA RELOAD
+          this.getItems();
+        });
+    },
+
+    //EDIT KPI
+    async editKpi(item) {
+      this.kpi_id = item.kpi_id;
+      //this.kra_id = this.kra_id;
+      this.kpi_name = item.kpijoin.kpi_name;
+      this.kpi_weight = item.kpijoin.kpi_weight;
+      this.$modal.show("kpiedit");
+    },
+
+    //UPDATE KPI
+    async updateKpi() {
+      this.editKpiForm.id = this.kpi_id;
+      this.editKpiForm.kpi_name = this.kpi_name;
+      this.editKpiForm.kpi_weight = this.kpi_weight;
+      this.editKpiForm
+        .put(this.api_url + "k_p_i_s/" + this.kpi_id, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+
+          //HIDE MODAL
+          this.$modal.hide("kpiedit");
+
+          //DATA RELOAD
+          this.getItems();
+        });
+    },
+
+    //OPEN ADD NEW KPI MODAL
+    async addKpi(item) {
+      this.kra_id = item.kra_id;
+      this.$modal.show("kpiadd");
+    },
+
+    //ADD NEW KPI
+    async addNewKpi() {
+      this.addKpiForm.kra_id = this.kra_id;
+      this.addKpiForm.kpi_name = this.kpi_name;
+      this.addKpiForm.kpi_weight = this.kpi_weight;
+      this.addKpiForm.dept_id = this.user_data.department;
+      this.addKpiForm.year = this.year;
+      this.addKpiForm
+        .post(this.api_url + "k_p_i_s", {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+
+          //HIDE MODAL
+          this.$modal.hide("kpiadd");
+
+          //DATA RELOAD
+          this.getItems();
+        });
+    },
+
+    //OPEN ADD NEW MOS MODAL
+    async addMos(item) {
+      this.kra_id = item.kra_id;
+      this.kpi_id = item.kpi_id;
+      this.$modal.show("mosadd");
+    },
+
+    //ADD NEW MOS
+    async addNewMos() {
+      console.log(this.user_data);
+      this.addMosForm.kra_id = this.kra_id;
+      this.addMosForm.kpi_id = this.kpi_id;
+      this.addMosForm.dept_id = this.user_data.department;
+      this.addMosForm.mos_name = this.mos_name;
+      this.addMosForm.weightage = this.mos_weight;
+      this.addMosForm.year = this.year;
+      this.addMosForm
+        .post(this.api_url + "m_o_s", {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+
+          //HIDE MODAL
+          this.$modal.hide("mosadd");
+
+          //DATA RELOAD
+          this.getItems();
+        });
+    },
+
+    //EDIT MOS
+    async editMos(item) {
+      this.mos_id = item.id;
+      this.mos_name = item.mos_name;
+      this.mos_weight = item.weightage;
+      this.kpi_id = item.kpi_id;
+      this.$modal.show("mosedit");
+    },
+
+    //UPDATE MOS
+    async updateMos() {
+      this.editMosForm.id = this.mos_id;
+      this.editMosForm.mos_name = this.mos_name;
+      this.editMosForm.weightage = this.mos_weight;
+      this.editMosForm.kpi_id = this.kpi_id;
+      this.editMosForm
+        .put(this.api_url + "m_o_s/" + this.mos_id, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+
+          //HIDE MODAL
+          this.$modal.hide("mosedit");
+
+          //DATA RELOAD
+          this.getItems();
+        });
+    },
+
+    async deleteKra(id) {
+      await axios
+        .get(this.api_url + "kra_delete/" + id, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+          this.getItems();
+          console.log(data);
+        });
+    },
+    async delete_kra(id) {
+      this.$swal({
+        title: "Are you sure you want to delete?",
+        text: "",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          this.deleteKra(id);
+        }
+      });
+    },
+    async delete_kpi(id) {
+      this.$swal({
+        title: "Are you sure you want to delete?",
+        text: "",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          this.deleteKpi(id);
+        }
+      });
+    },
+
+    async deleteKpi(id) {
+      await axios
+        .get(this.api_url + "kpi_delete/" + id, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+          this.getItems();
+          console.log(data);
+        });
+    },
+    async delete_mos(id) {
+      this.$swal({
+        title: "Are you sure you want to delete?",
+        text: "",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          this.deleteMos(id);
+        }
+      });
+    },
+
+    async deleteMos(id) {
+      await axios
+        .get(this.api_url + "mos_delete/" + id, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: this.token ? `Bearer ${this.token}` : "",
+          },
+        })
+        .then((data) => {
+          this.$toasted.show(data.data.message, {
+            theme: "bubble",
+            duration: 5000,
+            position: "bottom-right",
+          });
+          this.getItems();
+          console.log(data);
+        });
+    },
+  },
+  computed: {},
+};
+</script>

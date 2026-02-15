@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Model;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Auth;
+
+class JobGrade extends Model
+{
+    protected $table = 'job_grades';
+
+    protected $guarded = array('id','created_at','updated_at');
+
+    public function scopeValid($query)
+	{
+		return $query->where('job_grades.valid', 1);
+    }
+    public function scopeProject($query)
+    {
+        $project_id = Auth::guard('user')->user()->project_id;
+        return $query->where('job_grades.project_id', $project_id);
+    }   
+}

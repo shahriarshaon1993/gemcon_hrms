@@ -1,0 +1,286 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Requests\API\CreateUserAPIRequest;
+use App\Http\Requests\API\UpdateUserAPIRequest;
+use App\Models\User;
+use App\Models\TourUser;
+use App\Repositories\UserRepository; 
+use App\Http\Resources\UserTourResource;
+use App\Http\Resources\UserResource;
+use Illuminate\Http\Request;
+use App\Http\Controllers\AppBaseController;
+use Response;
+use Auth , DB;
+
+/**
+ * Class UserController
+ * @package App\Http\Controllers\API
+ */
+
+class UserAPIController extends AppBaseController
+{
+    /** @var  UserRepository */
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepo)
+    {
+        $this->userRepository = $userRepo;
+    }
+
+    /**
+     * Display a listing of the User.
+     * GET|USER /users
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function index(Request $request)
+    {
+       
+        //$users = User::all();
+        $user_data = Auth::guard('user')->user();
+        if($user_data->role_id == 5){
+            $request['dept_id'] = $user_data->department ;
+        }elseif($user_data->role_id == 6){
+            $request['wing_id'] = $user_data->wing_id ;
+        }elseif($user_data->role_id == 7){
+            $request['id'] = $user_data->id ;
+        }
+        $request['status'] = 1 ;
+         $users = $this->userRepository->all(
+            $request->except(['skip', 'limit']),
+            $request->get('skip'),
+            $request->get('limit')
+        ); 
+
+        $users  =   UserResource::collection($users);
+
+        return $this->sendResponse($users, 'Users retrieved successfully');
+    }
+    public function tour_plan_users(Request $request)
+    {
+        $users = DB::table('users')
+       // ->where('iactive', 0)
+        ->where('tour_permission','=',1)
+        ->orderBy('id')->get();
+        // $users = DB::table('users')
+        // ->where('iactive', 0)
+        // ->where(function($query)
+        // {
+        //     $query->where('tour_permission','=',1)
+        //     ->orWhere('designation','=','GM')
+        //     ->orWhere('designation','=','SM')
+        //     ->orWhere('designation','=','ADSM')
+        //     ->orWhere('designation','=','ASM');
+        // })
+        // ->orderBy('id')->get();
+    
+
+        // $user_data = Auth::guard('user')->user();
+
+        // //print_r($user_data );
+
+        // $supervisor = DB::table('users')
+        // ->where('iactive',0);
+    
+        // if($user_data->designation=='SM' || $user_data->designation=='AGM'){
+    
+        //     $supervisorResult = $supervisor->where('sm',$user_data->id)->orderBy('id')->get();
+        // }
+        // elseif($user_data->designation=='ASM'){
+    
+        //     $supervisorResult = $supervisor->where('asm',$user_data->id)->orderBy('id')->get();
+        // }
+        // elseif($user_data->designation=='DSM'){
+    
+        //     $supervisorResult = $supervisor->where('dsm',$user_data->id)->orderBy('id')->get();
+        // } 
+        // elseif($user_data->designation=='ADSM'){
+    
+        //     $supervisorResult = $supervisor->where('adsm',$user_data->id)->orderBy('id')->get();
+        // }
+        // elseif($user_data->designation=='RSM'){
+    
+        //     $supervisorResult = $supervisor->where('rsm',$user_data->id)->orderBy('id')->get();
+        // }
+    
+        // else{
+        //     if($user_data->usertype=='A')
+        //     {
+        //         $supervisorResult = $supervisor->where(function($query)
+        //         {
+        //             $query->where('email','>',30)
+        //             ->orWhere('email','=','sysadmin')
+        //             ->orWhere('email','=','ibrahim')
+        //             ->orWhere('email','=','sales');
+        //         })
+        //         ->where('tour_program','=', 1)
+        //         ->orderBy('id')->get();
+    
+        //     }
+        //     elseif($user_data->department>0)
+        //     {
+        //         $supervisorResult = $supervisor->where('rsm',$user_data->department)->orderBy('id')->get();
+        //     }  else{
+    
+        //         $supervisorResult = $supervisor->where('vuser',$user_data->email)->orderBy('id')->get();
+        //     }
+        // }
+
+        //print_r( $supervisorResult);
+    
+    
+       
+        //$users = User::all();
+    
+        //  //$request['role_id'] = 10 ; 
+        //  $users = $this->userRepository->all(
+        //     $request->except(['skip', 'limit']),
+        //     $request->get('skip'),
+        //     $request->get('limit')
+        // ); 
+
+        // $users  =   UserTourResource::collection($users);
+
+       return $this->sendResponse($users, 'Users retrieved successfully');
+    }
+    public function userWing(Request $request)
+    { 
+        //$users = User::all();
+        $user_data = Auth::guard('user')->user();
+        if($user_data->role_id == 5 || $user_data->role_id == 6 ){
+            $request['dept_id'] = $user_data->department ;
+        }
+         //$request['role_id'] =  6 ;
+         $users = $this->userRepository->all(
+            $request->except(['skip', 'limit']),
+            $request->get('skip'),
+            $request->get('limit')
+        ); 
+
+        $users  =   UserResource::collection($users);
+
+        return $this->sendResponse($supervisorResult, 'Users retrieved successfully');
+    }
+
+    /**
+     * Store a newly created User in storage.
+     * POST /Users
+     *
+     * @param CreateUserAPIRequest $request
+     *
+     * @return Response
+     */
+    public function store(CreateUserAPIRequest $request)
+    {
+        $input = $request->except(['password']);
+        $input['password'] = bcrypt($request->password);
+
+        $user = $this->userRepository->create($input);
+
+        return $this->sendResponse($user->toArray(), 'User saved successfully');
+    }
+    public function add_tour_user(CreateUserAPIRequest $request)
+    {
+        $input = $request->except(['password']);
+        $input['password'] = bcrypt($request->password);
+
+        $user = $this->userRepository->create($input);
+       // $user = $user->toArray() ;
+        TourUser::create([
+            'user_id' =>  $user->id ,
+            'employee_id' =>  $request->employee_id ,
+            'designation' =>  $request->designation  
+         ]);
+
+        return $this->sendResponse($user , 'User saved successfully');
+    }
+
+    /**
+     * Display the specified User.
+     * GET|USER /users/{id}
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function show($id)
+    {
+        /** @var User $user */
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            return $this->sendError('User not found');
+        }
+
+        return $this->sendResponse($user->toArray(), 'User retrieved successfully');
+    }
+
+    /**
+     * Update the specified User in storage.
+     * PUT/PATCH /users/{id}
+     *
+     * @param int $id
+     * @param UpdateUserAPIRequest $request
+     *
+     * @return Response
+     */
+    public function update($id, UpdateUserAPIRequest $request)
+    {
+        $input = $request->all();
+
+        /** @var Head $head */
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            return $this->sendError('User not found');
+        }
+
+        $user = $this->userRepository->update($input, $id);
+
+        return $this->sendResponse($user->toArray(), 'User updated successfully');
+    }
+    public function users_change( Request $request)
+    {
+        $user = User::find($request->id);
+
+        $user->wing_id = $request->wing_id;
+
+        $return = $user->save();
+ 
+        return $this->sendResponse($return , 'User updated successfully');
+    }
+    public function profile_update($id , Request $request)
+    {
+        $input = $request->all();
+        $user = $this->userRepository->update($input, $id);
+ 
+        return $this->sendResponse($user , 'User updated successfully');
+    }
+
+    /**
+     * Remove the specified Head from storage.
+     * DELETE /users/{id}
+     *
+     * @param int $id
+     *
+     * @throws \Exception
+     *
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        /** @var User $user */
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            return $this->sendError('User not found');
+        }
+
+        $user->delete();
+
+        return $this->sendSuccess('User deleted successfully');
+    }
+}

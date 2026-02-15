@@ -1,0 +1,277 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+img {
+    width: 100%;
+}
+
+p {
+    margin: 0;
+}
+
+.navbar-brand {
+    width: 100px;
+}
+
+.bar-icons {
+    display: block;
+    width: 20px;
+    height: 2px;
+    margin: 5px 0;
+    background: #fff;
+}
+
+.dropdown-menu {
+    width: 220px;
+    background-color: rgba(255, 255, 255);
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+    margin-top: -0.25rem;
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #000 !important;
+    padding: 6.5px 10px;
+    font-size: 16px;
+    transition: all color 0.3s;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    color: #ffffff !important;
+    background: rgb(252, 185, 0, 1);
+}
+
+.dropdown-menu > li:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-left: 0;
+    margin-top: -1px;
+}
+
+.navbar-nav .dropdown-menu {
+    padding: 0 0;
+    border-radius: 0;
+}
+
+.navbar-expand-lg .navbar-nav .nav-link {
+    font-size: 14px;
+}
+
+@media (max-width: 992px) {
+    .dropdown-menu .dropdown-menu {
+        position: relative;
+        left: 0;
+        top: 0;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+    }
+
+    .dropdown-submenu > .dropdown-menu {
+        padding-left: 1rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-expand-lg .navbar-nav .nav-link {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+.section-navbar {
+    background-color: #fff;
+}
+
+.navbar-ctn {
+    padding: 0 30px;
+}
+
+.navbar-nav .nav-item a {
+    color: #000;
+}
+
+.job-card {
+    cursor: pointer;
+}
+
+.sidebar {
+    display: none;
+    overflow: scroll;
+    width: 320px;
+    background: #333;
+    height: 100vh;
+    padding: 10px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    right: -320px;
+    transition: right 0.3s ease;
+    z-index: 9999999;
+}
+
+.sidebar .close-sidebar {
+    padding: 10px;
+    margin-bottom: 10px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.sidebar .close-sidebar i {
+    font-size: 30px;
+    color: #fff;
+}
+
+.sidebar.active {
+    right: 0;
+}
+
+.sidebar .menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar .menu > li > a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    background: #444444;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar .menu > li > a > i,
+.menu .submenu > li > a > i {
+    transition: all 0.3s;
+}
+
+.menu .submenu {
+    list-style-type: none;
+    padding-left: 20px;
+    display: none;
+}
+
+.menu .submenu > li > a {
+    color: #dddddd;
+    text-decoration: none;
+    padding: 8px;
+    background: #555;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu > li.active > a,
+.submenu > li.active > a {
+    background-color: #007bff;
+}
+
+.menu > li.active > a > i,
+.submenu > li.active > a > i {
+    rotate: 90deg;
+}
+
+.menu > li.active > .submenu,
+.submenu > li.active > .submenu {
+    display: block;
+}
+
+@media (max-width: 992px) {
+    .desktop-menu {
+        display: none;
+    }
+
+    .sidebar {
+        display: block;
+    }
+}
+
+.skills {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.skills .skill {
+    border-radius: 100px;
+    border: 0.5px solid #ddd;
+    background: #f4f4f4;
+    color: #333;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 10px !important;
+}
+
+.footer {
+    background: #eeeeee;
+    font-size: 11px;
+}
+
+.footer a.address {
+    color: #2d2d2d;
+    text-decoration: none;
+}
+
+.footer a.address span:hover {
+    color: #555555;
+    text-decoration: underline;
+}
+
+.footer .copy {
+    margin: 0;
+    color: #2d2d2d;
+}
+
+/* Job portals designs */
+.circulars h3.card-title {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.circulars .card-text span {
+    font-size: 14px;
+}
+
+.circulars .circular-icon {
+    font-size: 14px;
+    color: #4c4b4b;
+}
+
+.circular-details .context-block {
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.circular-footer {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.circular-footer .footer-text-sm {
+    font-size: 12px;
+}
+
+.circular-footer .footer-text {
+    font-weight: bold;
+}

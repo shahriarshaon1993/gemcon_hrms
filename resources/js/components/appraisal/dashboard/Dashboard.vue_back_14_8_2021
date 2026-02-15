@@ -1,0 +1,685 @@
+<template>
+<div>
+    <div class="app-content content"> 
+        <div class="content-wrapper">
+            <div class="content-header row">
+                <div class="content-header-left col-12 mb-1 mt-0">
+                    <div class="row breadcrumbs-top">
+                        <div class="col-sm-9">
+                            <div class="breadcrumb-wrapper col-9">
+                                <ol class="breadcrumb p-0 mb-0">
+                                    <li class="breadcrumb-item">
+                                        <router-link :to="{ path: '/' }"><i class="bx bx-home-alt"></i></router-link>
+                                    </li>
+                                    <li class="breadcrumb-item active"> Dashboard
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div  class=" col-sm-3">
+                            <router-link v-if="dept_id == 24 || dept_id == 25 || dept_id == 27   || dept_id == 30  || dept_id == 69  " class="btn btn-primary add-btn" :to="{ path: '/add_fac_work' }"> <i class="bx bx-add-alt"></i> Fac Add </router-link>
+                            
+                            <router-link v-if="role_id != 10" class="btn btn-primary add-btn" :to="{ path: '/add_daily_work' }"> <i class="bx bx-add-alt"></i>New Work Schedule</router-link>
+                            <router-link v-if="role_id == 10" class="btn btn-primary add-btn" :to="{ path: '/new_tour' }"> <i class="bx bx-add-alt"></i>New Tour Plan</router-link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section id="basic-datatable">
+                <div  class="content-body">
+                    <div  class="users-list-filter px-1"> 
+                        <div  class="row border rounded py-2 mb-2">
+                            <div  class="col-12 col-sm-6 col-lg-2">
+                                <label for="users-list-verified">Department</label>
+                                <fieldset class="form-group">
+                                    <select class="form-control" v-on:change="filter_data()" v-model="filterForm.dept_id"  id="users-list-verified" >
+                                        <option value="">All</option>
+                                        <option v-for="row in deptItems" :key="row.id" :value="row.id" >
+                                        {{ row.name }}
+                                        </option>
+                                    </select>
+                                    
+                                </fieldset>
+                            </div>  
+                            <div  class="col-12 col-sm-6 col-lg-2">
+                                <label for="users-list-verified">Filter By</label>
+                                <fieldset class="form-group">
+                                    <select class="form-control"   v-model="filterForm.filter_by"  id="users-list-verified" >
+                                        <option value="year">Year </option>
+                                        <option value="quarter">Quarter </option>
+                                        
+                                    </select>
+                                    
+                                </fieldset>
+                            </div> 
+                        </div>  
+
+                    <div class="row" v-if="filterForm.filter_by =='year'">  
+                        <div  class="col-xl-4">
+                            <div class="card card_box">
+                                <apexchart  type="pie" height="500px"
+                                :options="yearly_achievement.chartOptions"  
+                                :series="achievement"
+                                ></apexchart> 
+                            </div>
+                        </div>
+                        <!-- //Performance management -->
+                        <div  class="col-xl-4"  v-if="role_id == 1 || role_id == 2 || role_id == 3 || role_id == 4 || role_id == 8 || role_id == 5 ">
+                            <div class="card card_box">
+                                <apexchart ref="chart1"  type="donut" :options="performance.chartOptions" :series="performance_value"></apexchart> 
+                            </div>
+                        </div>
+                        <div  class="col-xl-4"  v-if="role_id == 1 || role_id == 2 || role_id == 3 || role_id == 4 || role_id == 8 || role_id == 5 ">
+                            <div class="card card_box"> 
+                                <apexchart  ref="budget_analytics" type="bar" :options="analytics_bar.chartOptions" :series="analytics_bar.series"></apexchart>
+                            </div>
+                        </div>  
+                    </div> 
+
+                    <div class="row" v-if="filterForm.filter_by =='quarter'">  
+                        <div  class="col-xl-3">
+                            <div class="card">
+                                <apexchart  type="pie" height="500px"
+                                :options="quarter_achievement_1.chartOptions"  
+                                :series="achievement_1"
+                                ></apexchart> 
+                            </div>
+                        </div>
+                        <div  class="col-xl-3">
+                            <div class="card">
+                                <apexchart  type="pie" height="500px"
+                                :options="quarter_achievement_2.chartOptions"  
+                                :series="achievement_2"
+                                ></apexchart> 
+                            </div>
+                        </div>
+                        <div  class="col-xl-3">
+                            <div class="card">
+                                <apexchart  type="pie" height="500px"
+                                :options="quarter_achievement_3.chartOptions"  
+                                :series="achievement_3"
+                                ></apexchart> 
+                            </div>
+                        </div>
+                        <div  class="col-xl-3">
+                            <div class="card">
+                                <apexchart  type="pie" height="500px"
+                                :options="quarter_achievement_4.chartOptions"  
+                                :series="achievement_4"
+                                ></apexchart> 
+                            </div>
+                        </div>
+                         
+                    </div> 
+
+                    <!-- //Dept Wise Monthly Activity --> 
+
+                        <div v-if="role_id == 1 || role_id == 2 || role_id == 3 || role_id == 4 || role_id == 8 ||  role_id == 5"  class="row">
+                            <div class="col-12">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="card-body card-dashboard">
+                                        <div class="px-2 py-2 text-center mycustomefont mycustomefont">
+                                            <b> Department Wise Monthly Activity  
+                                            <select  id="Profession" name="month_index" v-model="month_index"   @change="changeMonth()"  >
+                                                <option value="">Select one</option>
+                                                <option  v-for="(row ,index) in monthNames" :key="index" :value="index">{{ row}}</option>  
+                                            </select>
+                                        </b>
+                                        </div>  
+                                            
+                                        <div class="table-responsive">
+                                        <table class="table table-bordered table-sm">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th class="text-center"> Department <input type="text" class="text-center" placeholder="Search" v-model="search"></th>
+                                                    <th> Target </th>
+                                                    <th> Achievement </th>
+                                                    <th> Remaining </th>
+                                                    <!---->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr  v-for="(item , index ) in filteredItems" :key="index">
+                                                    <td class="text-center"  @click="show_pop(item)" >
+                                                        {{ item.name}} 
+                                                        <i style="float: right;" class="bx bx-detail btn primary"></i></td>
+                                                    <td class="text-right"> {{ (item.target[current_monthstr] ? item.target[current_monthstr] : 0).toFixed(2) }} </td>
+                                                    <td class="text-right"> {{ (item.achievement[current_monthstr] ? item.achievement[current_monthstr]  : 0 ).toFixed(2) }}</td>
+                                                    <td class="text-right"> {{ ((item.target[current_monthstr] ? item.target[current_monthstr] : 0 ) -  (item.achievement[current_monthstr] ? item.achievement[current_monthstr]  : 0)).toFixed(2) }}</td>
+                                                    <!-- <td> 0.00</td>                                                     -->
+                                                </tr>
+                                            
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div> 
+
+                        <modal width="60%" height="84%" style="padding:50px" name="popup-singel">
+                            <i @click="hide_pop()" class="bx bx-x-circle  x-circle"></i>
+                            <div class="app-content ">
+                            <div class="card">
+                                <apexchart ref="dept_analytics" type="bar" :options="singel_analytics_bar.chartOptions" :series="dept_analytics_series"></apexchart>
+                            </div>
+                            </div>
+                        </modal>
+    
+                </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- END: Content-->
+
+    <!-- demo chat-->
+ 
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+</div>
+</template>
+
+<script>
+//import LineChart from './LineChart.js'
+//import axios from "../axios_instance";
+import axios from "../axios_instance";
+import { Form } from "vform"; 
+import VueApexCharts from 'vue-apexcharts'
+export default {
+    props: {},
+    components: {
+        'apexchart': VueApexCharts
+        // LineChart
+        // VueRecaptcha, facebookLogin
+    },
+    data() {
+        return { 
+            monthNames : ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December" ],
+            monthly_activity : [],
+            target_achievement : [], 
+            achievement : JSON.parse(this.$localStorage.get("achievement")),
+            target : JSON.parse(this.$localStorage.get("target")),
+            user_data: JSON.parse(this.$localStorage.get("user")).data,
+            base_url: window.base_url,
+            api_url: window.api_url,
+            search :  "" ,
+            item: [],
+            current_month : '',
+            current_monthstr : '',
+            month_index : 0 ,
+            deptItems : [],
+            filterForm: new Form({ 
+                dept_id: ""  ,
+                filter_by : "year" 
+            }),
+            token: this.$localStorage.get("d_token"), 
+            yearly_achievement: {  
+                chartOptions: {
+                    chart: { 
+                        height: '100%',
+                        type: 'pie',
+                       
+                    },
+                     title: {
+                        text: 'Yearly Achievement',
+                        align: 'center'
+                    },
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+
+            },
+            achievement_1 : [12,34,12] ,
+            quarter_achievement_1: {  
+                chartOptions: {
+                    chart: { 
+                        height: '100%',
+                        type: 'pie',
+                       
+                    },
+                     title: {
+                        text: 'Quarter-1 Achievement',
+                        align: 'center'
+                    },
+                    labels: ['Jan', 'Feb', 'Mar' ],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+
+            },
+            achievement_2 : [20,34,12] ,
+            quarter_achievement_2: {  
+                chartOptions: {
+                    chart: { 
+                        height: '100%',
+                        type: 'pie',
+                       
+                    },
+                     title: {
+                        text: 'Quarter-2 Achievement',
+                        align: 'center'
+                    },
+                    labels: [ 'Apr', 'May', 'Jun'],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+
+            },
+            achievement_3 : [12,10,12] ,
+            quarter_achievement_3: {  
+                chartOptions: {
+                    chart: { 
+                        height: '100%',
+                        type: 'pie',
+                       
+                    },
+                     title: {
+                        text: 'Quarter-3 Achievement',
+                        align: 'center'
+                    },
+                    labels: [ 'Jul', 'Aug', 'Sep' ],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+
+            },
+            achievement_4 : [50,34,12] ,
+            quarter_achievement_4: {  
+                chartOptions: {
+                    chart: { 
+                        height: '100%',
+                        type: 'pie',
+                       
+                    },
+                     title: {
+                        text: 'Quarter-4 Achievement',
+                        align: 'center'
+                    },
+                    labels: [ 'Oct', 'Nov', 'Dec'],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+
+            },
+            performance_value :  [10,8],
+            performance: {  
+                chartOptions: {
+                    chart: {
+                        height: '100%',
+                        type: 'donut',
+                    },
+                     title: {
+                        text: 'Performance Management',
+                        align: 'center'
+                    },
+                    labels: ['Remaining ', 'Performance'],
+                    theme: {
+                    monochrome: {
+                        enabled: true
+                    }
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+
+            },
+            analytics_bar: {
+                series: [{
+                        name: 'Target',
+                        data: JSON.parse(this.$localStorage.get("target")),
+                    },
+                    {
+                        name: 'Achievement',
+                        data: JSON.parse(this.$localStorage.get("achievement")) 
+                    }
+                     
+                ],
+                chartOptions: {
+                    chart: {
+                        type: 'bar',
+                        height: 200
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '65%',
+                            endingShape: 'rounded'
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Month base achievement',
+                        align: 'center'
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    xaxis: {
+                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    }, 
+                    yAxes: [{
+                        stacked: false,
+                        position: "left",
+                        id: "y-axis-0",
+                        ticks: {
+                        beginAtZero: true
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Left'
+                        },
+                    }, {
+                        stacked: false,
+                        position: "right",
+                        id: "y-axis-1",
+                        ticks: {
+                            min: -1000,
+                            max: 8000,
+                            stepSize: 1000,
+                            beginAtZero: true,
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Right'
+                        },
+                    }, ], 
+                    fill: {
+                        opacity: 1
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val
+                            }
+                        }
+                    }
+                },
+            },
+            dept_analytics_series: [], 
+            singel_analytics_bar: {
+               series: [{
+                       name: 'Target',
+                       data: [30, 40, 45, 50, 49, 60, 70, 91, 0, 5, 34, 100]
+                   },
+                   {
+                       name: 'Achievement',
+                       data: [14, 30, 30, 40, 30, 0, 50, 21, 0, 5, 24, 55]
+                   } ],
+                   chartOptions: {
+                   chart: {
+                       type: 'bar',
+                       height: 100
+                   },
+                   plotOptions: {
+                       bar: {
+                           horizontal: false,
+                           columnWidth: '65%',
+                           endingShape: 'rounded'
+                       },
+                   },
+                   dataLabels: {
+                       enabled: false
+                   },
+                   title: {
+                       text: 'Achievement and Target Analytics ',
+                       align: 'center'
+                   },
+                   stroke: {
+                       show: true,
+                       width: 2,
+                       colors: ['transparent']
+                   },
+                   xaxis: {
+                       categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                   },
+                   yaxis: {
+                       title: {
+                           text: 'Value'
+                       }
+                   },
+                   fill: {
+                       opacity: 1
+                   },
+                   tooltip: {
+                       y: {
+                           formatter: function (val) {
+                               return "TK " + val + " M"
+                           }
+                       }
+                   }
+               },
+             } 
+        };
+    },
+    mounted: function () {  
+        
+    },
+    created() { 
+        this.dept_id = this.user_data.department ;
+        if(this.$route.params.type == 'login'){
+          //  alert('ok');
+           this.$router.push("/"); 
+           this.$router.go("/");
+        }     
+        this.role_id = this.user_data.role_id ; 
+        if(this.role_id == 5 || this.role_id == 6 || this.role_id == 7){
+           this.filterForm.dept_id =   this.user_data.department ;
+          // this.getWing(); 
+          this.getDept();
+        }else{
+            this.getDept();
+        }
+       
+        let d = new Date();
+        this.month_index =  d.getMonth() ;
+        this.current_month  =  this.monthNames[ this.month_index] ;
+        this.current_monthstr = this.current_month.toLowerCase() ;
+      
+        this.getTargetAchievement();
+        this.getMonthly_activity();
+    },
+    methods: {
+        changeMonth(){ 
+            let loader = this.$loading.show();
+            this.current_month  =  this.monthNames[ this.month_index] ;
+            this.current_monthstr = this.current_month.toLowerCase() ;
+            loader.hide();
+        },
+        hide_pop() {
+           this.$modal.hide("popup-singel");
+       },
+       filter_data(){
+           this.getTargetAchievement();
+           this.getMonthly_activity();
+
+       },
+        show_pop(row) {
+          
+           this.item = row;
+           this.$modal.show("popup-singel");
+           this.dept_analytics_series = [{
+                       name: 'Target', 
+                       data: [this.item.target.january,
+                         this.item.target.february, this.item.target.march,
+                         this.item.target.april, this.item.target.may, 
+                         this.item.target.june, this.item.target.july, 
+                         this.item.target.august, this.item.target.september,
+                         this.item.target.october, this.item.target.november, 
+                         this.item.target.december]
+                   },
+                   {
+                       name: 'Achievement',
+                       data: [this.item.achievement.january,
+                        this.item.achievement.february, this.item.achievement.march,
+                         this.item.achievement.april, this.item.achievement.may, 
+                         this.item.achievement.june, this.item.achievement.july, 
+                         this.item.achievement.august, this.item.achievement.september,
+                         this.item.achievement.october, this.item.achievement.november, 
+                         this.item.achievement.december]
+                   } ]  ; 
+           this.$refs.singel_analytics_bar.updateSeries(this.dept_analytics_series);
+           // this.group_donut_value = [this.item.jan, this.item.feb, this.item.mar, this.item.apr, this.item.may, this.item.jun, this.item.jul, this.item.aug, this.item.sep, this.item.oct, this.item.nov, this.item.dec]
+          // this.$refs.group_donut.updateSeries(this.group_donut_value );
+         
+       },
+          
+        async getTargetAchievement(){ 
+           // setInterval(() => {
+                let loader = this.$loading.show();
+                let  where = '?' ;
+                if (this.filterForm.dept_id ) {
+                    where += '&dept_id=' + this.filterForm.dept_id;
+                }
+                try {
+                    await axios
+                        .get(this.api_url + "dashboard" + where, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: this.token ? `Bearer ${this.token}` : ""
+                            },
+                        })
+                        .then(({
+                            data
+                        }) => {
+                            if (data.success) { 
+                               // setInterval(() => {
+                                    this.target_achievement = data.data ;
+                                    this.achievement = this.target_achievement.achievement ;
+                                    this.target = this.target_achievement.target ;
+                                   // this.$localStorage.get("achievement")
+                                    this.$localStorage.set("achievement", JSON.stringify(this.achievement) );
+                                    this.$localStorage.set("target", JSON.stringify(this.target) );
+                                 
+                            }
+                            loader.hide();
+                        });
+                } catch (error) {
+                    loader.hide();
+                }
+           // }, 3000);
+        },
+
+        //Department Wise Monthly Activity
+        async getMonthly_activity() {
+                let where = '?'; 
+          
+                // if (this.filterForm.dept_id ) {
+                //     where += '&id=' + this.filterForm.dept_id;
+                // }
+                let loader = this.$loading.show();
+                try {
+                    await axios
+                        .get(this.api_url + "department_wise_monthly_activity" + where, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: this.token ? `Bearer ${this.token}` : ""
+                            },
+                        })
+                        .then(({
+                            data
+                        }) => {
+                            if (data.success) {
+                                this.monthly_activity = data.data ;
+                                console.log( this.items );
+                            }
+                            loader.hide();
+                        });
+                } catch (error) {
+                    loader.hide();
+                }
+            },
+            async getDept(){
+                let loader = this.$loading.show();
+                this.getDepartments( this.status ).then(({ data }) => { 
+                    if(data.success){
+                        loader.hide();
+                        this.deptItems =  data.data ;
+                        this.getItems(); 
+                    }else{
+                        loader.hide(); 
+                    }
+                }); 
+            },
+
+       
+        },
+    computed: {
+        // achievement_series() {
+        //     return this.achievement ;
+        // }
+        filteredItems() {
+            return this.monthly_activity.filter(item => {
+                return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+            })
+        }
+    },
+};
+</script>
+<style>
+    .card_box {
+        min-height: 400px !important;
+    }
+</style>

@@ -1,0 +1,124 @@
+.pl0{
+	padding-left: 0px;
+}
+.pr0{
+	padding-right: 0px;
+}
+.mb-10{
+	margin-bottom: 10px;
+}
+.bt-2{
+	border-top: 2px solid #eee;
+}
+.bl-2{
+	border-left: 2px solid #eee;
+}
+.br-2{
+	border-right: 2px solid #eee;
+}
+.bb-2{
+	border-bottom: 2px solid #eee;
+}
+
+.dashboard-heading{
+	font-size: 25px;
+	color: #000000;
+	font-weight: 700;
+	text-align: center;
+	padding: 15px;
+}
+.dashboard-sub-heading{
+	background: #2fa95e;
+	padding: 10px 0px;
+	font-size: 14px;
+	margin-bottom: 15px;
+}
+.dashboard-chart-heading{
+	/*background: #2fa95e;*/
+	padding: 5px;
+	font-size: 10px;
+	color: #000000;
+	/*text-align: center;*/
+}
+.dashboard-chart-heading table{
+	/*background: #2fa95e;*/
+	padding: 5px;
+	font-size: 10px;
+	color: #000000;
+	/*text-align: center;*/
+}
+.gemcon-established{
+	font-weight: 600;
+	padding-left: 10px;
+	/*float: left;*/
+}
+.dashboard-year-month-time{
+	font-weight: 600;
+	padding-right: 10px;
+}
+.chairman-image{
+	/*margin: 15px 0px;*/
+}
+.chairman-image img{
+	margin-bottom: 15px;
+}
+.name-title{
+	font-size: 16px;
+	font-weight: 700;
+	color: #2fa95e;
+	margin-left: 10px;
+	display: inline-block;
+	padding-top: 20px;
+}
+.designation-title{
+	font-size: 14px;
+	font-weight: 700;
+	color: #000000;
+	margin-left: 10px;
+	display: inline-block;
+}
+
+.heading-bg{
+	background: #2fa95e;
+	/*background: #000;*/
+	color: #fff;
+	font-size: 12px;
+	padding: 5px 10px;
+}
+/*.heading-text-left{	
+	float: left;
+}
+.heading-text-right{
+	text-align: right;
+	float: right;
+}*/
+
+@media screen (min-width: 320px) and (max-width: 480px) {
+ .pl0{
+	padding-left: 15px;
+}
+.pr0{
+	padding-right: 15px;
+}
+.mb-10{
+	margin-bottom: 0px;
+}
+.bt-2{
+	border-top: 0px solid #eee;
+}
+.bl-2{
+	border-left: 0px solid #eee;
+}
+.br-2{
+	border-right: 0px solid #eee;
+}
+.bb-2{
+	border-bottom: 0px solid #eee;
+} 
+}
+@media screen and (min-width: 480px) {
+  
+}
+@media screen and (min-width: 480px) {
+  
+}

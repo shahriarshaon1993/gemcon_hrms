@@ -107,7 +107,11 @@
                                         </h3>
                                         <h6 class="card-title">{{ $job->sbu_name }}</h6>
 
-                                        <div style="max-width: 30rem;">
+                                        <div>
+                                            {!! \Illuminate\Support\Str::words($job->jc_job_description, 30, '...') !!}
+                                        </div>
+
+                                        {{-- <div style="max-width: 30rem;">
                                             <p class="card-text">
                                                 <i class="fa-solid fa-location-dot circular-icon"></i>
                                                 <span>{{ $job->work_location_name }}</span>
@@ -116,9 +120,9 @@
                                                 <i class="fas fa-graduation-cap circular-icon"></i>
                                                 <span>{{ $job->jc_educational_requirements }}</span>
                                             </p>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="d-flex align-items-center justify-content-between mt-2">
+                                        {{-- <div class="d-flex align-items-center justify-content-between mt-2">
                                             <p class="card-text">
                                                 <i class="fas fas fa-briefcase circular-icon"></i>
                                                 <span>{{ $job->jc_experience_requirements }}</span>
@@ -129,7 +133,7 @@
                                                     Deadline: {{ date('d M Y', strtotime($job->jc_circular_expired_date)) }}
                                                 </span>
                                             </p>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
@@ -559,28 +563,12 @@
                             <p>${data.jc_job_description}</p>
                         </div>
                         <div class="context-block">
-                            <h6>Job Responsibilities</h6>
-                            <p>${data.jc_job_responsibility}</p>
-                        </div>
-                        <div class="context-block">
                             <h6>Employment Status</h6>
                             <p>${data.jc_job_nature}</p>
                         </div>
                         <div class="context-block">
                             <h6>Workplace</h6>
                             <p>${data.work_location_name}</p>
-                        </div>
-                        <div class="context-block">
-                            <h6>Educational Requirements</h6>
-                            <p>${data.jc_educational_requirements}</p>
-                        </div>
-                        <div class="context-block">
-                            <h6>Experience Requirements</h6>
-                            <p>${data.jc_experience_requirements}</p>
-                        </div>
-                        <div class="context-block">
-                            <h6>Additional Requirements</h6>
-                            <p>${data.jc_job_requirements}</p>
                         </div>
                         <div class="context-block">
                             <h6>Job Location</h6>

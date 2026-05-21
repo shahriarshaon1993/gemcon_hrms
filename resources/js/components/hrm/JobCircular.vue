@@ -306,7 +306,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="form-group col-md-12">
                                             <label for="jc_job_responsibility">Job Responsibility</label>
                                             <vue-editor
@@ -314,9 +314,9 @@
                                                 style="width: 100%;"
                                             ></vue-editor>
                                         </div>
-                                    </div>
+                                    </div> -->
 
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="form-group col-md-12">
                                             <label for="jc_applied_requirements">Applied Requirements</label>
                                             <vue-editor
@@ -324,9 +324,9 @@
                                                 style="width: 100%;"
                                             ></vue-editor>
                                         </div>
-                                    </div>
+                                    </div> -->
 
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="form-group col-md-12">
                                             <label for="jc_job_requirements">Job Requirements</label>
                                             <vue-editor
@@ -334,7 +334,7 @@
                                                 style="width: 100%;"
                                             ></vue-editor>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row mt-3">
                                         <div class="form-group col-md-12">
@@ -409,7 +409,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="form-group col-md-12">
                                             <label for="jc_salary_range">Other Benefits</label>
                                             <vue-editor
@@ -417,7 +417,7 @@
                                                 style="width: 100%;"
                                             ></vue-editor>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row mt-3">
                                         <div class="form-group col-md-12">
@@ -435,7 +435,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="form-group col-md-12">
                                             <label for="jc_exam_type">
                                                 Exam Type
@@ -460,9 +460,9 @@
                                                 </label>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
 
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="form-group col-md-12">
                                             <label for="jc_circular_publish_date">
                                                 Publish Date
@@ -474,7 +474,7 @@
                                                 class="form-control"
                                             ></Datepicker>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row mt-3">
                                         <div class="form-group col-md-12">
@@ -499,8 +499,8 @@
                                             </label>
                                             <select v-model="form.jc_circular_status" name="employee_status" class="selectpicker form-control">
                                                 <option>--Select--</option>
-                                                <option value="1">Publish</option>
-                                                <option value="2">Unpublish</option>
+                                                <option value="1">Active</option>
+                                                <option value="2">Inactive</option>
                                             </select>
                                         </div>
                                     </div>

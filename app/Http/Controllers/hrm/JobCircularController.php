@@ -219,20 +219,20 @@ class JobCircularController extends Controller
             'jc_job_position' => ['required', 'array'],
 //            'jc_job_department' => ['required', 'array'],
             'jc_job_vacancy' => ['required', 'integer'],
-            'jc_job_description' => ['required', 'string'],
-            'jc_job_responsibility' => ['required', 'string'],
-            'jc_applied_requirements' => ['required', 'string'],
+            'jc_job_description' => ['nullable', 'string'],
+            // 'jc_job_responsibility' => ['required', 'string'],
+            // 'jc_applied_requirements' => ['required', 'string'],
             'jc_job_nature' => ['required', 'integer'],
-            'jc_job_requirements' => ['required', 'string'],
-            'jc_educational_requirements' => ['required', 'string'],
-            'jc_experience_requirements' => ['required', 'string'],
+            // 'jc_job_requirements' => ['required', 'string'],
+            // 'jc_educational_requirements' => ['required', 'string'],
+            // 'jc_experience_requirements' => ['required', 'string'],
             'jc_job_location' => ['required', 'array'],
             'jc_salary_range' => ['required', 'string'],
-            'jc_other_benefits' => ['required', 'string'],
-            'jc_circular_publish_date' => ['required', 'date'],
+            // 'jc_other_benefits' => ['required', 'string'],
+            // 'jc_circular_publish_date' => ['required', 'date'],
             'jc_circular_expired_date' => ['required', 'date'],
             'jc_person_assign' => ['required', 'array'],
-            'jc_exam_type' => ['required', 'integer'],
+            // 'jc_exam_type' => ['required', 'integer'],
             'jc_circular_status' => ['required', 'integer'],
         ];
 
@@ -261,7 +261,7 @@ class JobCircularController extends Controller
         $newData['department'] = $request->input('jc_job_department')['text'];
         $newData['expired_date'] = $request->input('jc_circular_expired_date');
 
-        $this->mailSend($newData);
+        // $this->mailSend($newData);
 
         return response([
             'status' => 1,

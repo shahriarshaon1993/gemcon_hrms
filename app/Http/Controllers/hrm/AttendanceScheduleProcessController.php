@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\hrm;
 
 use App\Helper\Helper;
+use App\Jobs\SendAttendanceMailJob;
 use App\Mail\AttendanceReminderMail;
 use App\Model\Attendance;
 use App\Model\AttendanceLog;
@@ -71,7 +72,9 @@ class AttendanceScheduleProcessController extends Controller
         $workLocationId = $request->input('work_location_value')['id'] ?? null;
         $employeeId = $request->input('employee_name_value')['id'] ?? null;
 
-        $employees = Employee::query()
+        $delay = 0;
+
+        Employee::query()
             ->with(['department', 'designation', 'reporting', 'sbu'])
             ->when($sbuId, function ($query, $sbuId) {
                 return $query->where('employee_sbu', $sbuId);
@@ -97,75 +100,19 @@ class AttendanceScheduleProcessController extends Controller
             ->when($employeeId, function ($query, $employeeId) {
                 return $query->where('id', $employeeId);
             })
+            ->where('official_email_id', '!=', null)
             ->where('employee_status', 1)
-            ->get();
-
-//        return $employees;
-
-//        ->where('employee_id_no', 201180) //100407 // 100427 // 199263 // 201180
-
-        if ($fromDate && $toDate) {
-            $totalDays = ((strtotime($toDate) - strtotime($fromDate)) / 86400) + 1;
-        } else {
-            $totalDays = Carbon::now()->diffInDays(Carbon::now()->startOfMonth()) + 1;
-        }
-
-        foreach ($employees as $employee) {
-            if (!$employee->official_email_id) {
-                continue;
-            }
-
-            $query = Attendance::query()
-                ->with('employee')
-                ->where('employee_card_no', $employee->employee_id_no);
-
-            if ($fromDate && $toDate) {
-                $query->whereBetween('pdate', [$fromDate, $toDate]);
-            } else {
-                $query->whereMonth('pdate', date('m'))
-                    ->whereYear('pdate', date('Y'));
-            }
-
-            $attendances = $query->orderBy('pdate', 'desc')->get();
-
-            $countEarlyOut = 0;
-            $attendances->map(function ($attendance) use (&$countEarlyOut) {
-                    $isEarlyOut = Helper::isEarlyOut($attendance);
-
-                    if ($isEarlyOut) $countEarlyOut++;
+            ->where('valid', 1)
+            ->where('deleted_at', null)
+            ->chunk(10, function ($employees) use ($fromDate, $toDate, &$delay) {
+                foreach ($employees as $employee) {
+                    SendAttendanceMailJob::dispatch($employee, $fromDate, $toDate)
+                        ->onQueue('attendances')
+                        ->delay(now()->addSeconds($delay));
                 }
-            );
 
-            $attendanceStatus['total_early_out'] = $countEarlyOut;
-            $attendanceStatus['present'] = $attendances->where('pstatus', 1)->count();
-            $attendanceStatus['late_present'] = $attendances->where('pstatus', 2)->count();
-            $attendanceStatus['total_absent'] = $attendances->where('pstatus', 3)->count();
-            $attendanceStatus['total_leave'] = $attendances->where('pstatus', 6)->count();
-
-            $attendanceStatus['total_late_approve'] = $attendances
-                ->where('remarks', 'Late(Approved)')
-                ->where('pstatus', 1)->count();
-
-//            return [
-//                'employee' => $employee,
-//                'attendances' => $attendances,
-//                'totalDays' => $totalDaysThisYear,
-//                'attendanceStatus' => $attendanceStatus
-//            ];
-
-//            return view('emails.attendance_reminder_mail', [
-//                'employee' => $employee,
-//                'attendances' => $attendances,
-//                'totalDays' => $totalDaysThisYear,
-//                'attendanceStatus' => $attendanceStatus
-//            ]);
-
-            Mail::to($employee->official_email_id)->send(
-                new AttendanceReminderMail(
-                    $employee, $attendances, $totalDays, $attendanceStatus
-                )
-            );
-        }
+                $delay += 15;
+            });
 
         Log::info('All mail has been sent successfully');
 

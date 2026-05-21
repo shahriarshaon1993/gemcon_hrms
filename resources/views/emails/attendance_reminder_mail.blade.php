@@ -106,7 +106,7 @@
 </head>
 <body>
 <div class="email-container">
-    <p>Attendance record of {{$employee->employee_fullname}} from joining to till date:</p>
+    <p>Attendance record of {{$employee->employee_fullname}} from {{date("01 M Y")}} to {{date("d M Y")}}</p>
 
     <div class="summery">
         <table style="width: 100%">
@@ -248,9 +248,9 @@
         </table>
     </div>
 
-    <p>This is a sample email template. You can customize it as per your requirements.</p>
+{{--    <p>This is a sample email template. You can customize it as per your requirements.</p>--}}
 
-    <p>Thank you,<br>Your Name</p>
+{{--    <p>Thank you,<br>Your Name</p>--}}
 </div>
 </body>
 </html>

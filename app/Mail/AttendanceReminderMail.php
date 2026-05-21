@@ -36,11 +36,11 @@ class AttendanceReminderMail extends Mailable
      */
     public function build()
     {
-        $subject = "Attendance record of {$this->employee->employee_fullname} from joining to till date";
+        $subject = "Attendance record of {$this->employee->employee_fullname}";
 
         return $this->view('emails.attendance_reminder_mail')
             ->subject($subject)
-            ->from('noreply@gmail.com', 'HRIS')
+            ->from('noreply.gemcon@gmail.com', 'HRIS')
             ->with([
                 'employee' => $this->employee,
                 'attendances' => $this->attendances,

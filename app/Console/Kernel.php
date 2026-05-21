@@ -2,7 +2,8 @@
 
 namespace App\Console;
 
-use App\Console\Commands\AttendanceDailyMail;
+use App\Console\Commands\AttendanceDailyMailCommand;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,10 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-//        'App\Console\Commands\twiceDaily',
-//        Commands\twiceDaily::class,
-
-        AttendanceDailyMail::class,
+        AttendanceDailyMailCommand::class,
     ];
 
     /**
@@ -28,12 +26,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-//        $schedule->command('daily:update')->everyMinute();
-//        $schedule->command('dummy:update')->everyMinute()->twiceDaily(10, 13);
+        $schedule->command('send:attendance-mail')
+            ->dailyAt('18:00')
+            ->when(function () {
+                return Carbon::now()->isLastOfMonth();
+            });
 
-        $schedule->command('attendance:mail')
-            ->everyMinute()
-            ->appendOutputTo('storage/logs/scheduler.log');
+        $schedule->command('send:birthday-mail')->dailyAt('14:35');
     }
 
     /**

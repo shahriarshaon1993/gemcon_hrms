@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\hrm;
+
 use App\JobAlert;
 use App\Mail\JobAlertMail;
 use App\Mail\ShortlistMail;
@@ -35,6 +37,7 @@ use permission;
 use Cache;
 use Auth;
 use DB;
+
 // use Request;
 
 class JobCircularController extends Controller
@@ -126,89 +129,132 @@ class JobCircularController extends Controller
     {
         $authUser = Auth::guard('user')->user();
 
-        // return response($department_data);
-        $data['company_sbu_data'] = array();
-        $data['section_data'] = array();
-        $data['sub_unit_data'] = array();
-        $data['work_location_data'] = array();
-        $data['department_data'] = array();
-        $data['designation_data'] = array();
-        $data['jobgrade_data'] = array();
-        $data['employee_data'] = array();
-        $company_sbu_data = CompanySbu::valid()->project()->orderBy('priority', 'ASC')->get();
-        $section_data = Section::valid()->project()->orderBy('priority', 'ASC')->get();
-
-        $departmentIds = [
-            3, 6, 8, 9, 10, 13, 17, 20, 27, 28, 31, 33, 35, 36, 37, 38, 39,
-            42, 46, 48, 60, 63, 65, 66, 68, 69, 78, 93, 96, 107, 121
+        $data = [
+            'company_sbu_data' => [],
+            'section_data' => [],
+            'sub_unit_data' => [],
+            'work_location_data' => [],
+            'department_data' => [],
+            'designation_data' => [],
+            'jobgrade_data' => [],
+            'employee_data' => [],
         ];
 
-        $department_data = Department::valid()->project()
-            ->whereIn('id', $departmentIds)
-            ->orderBy('department_name', 'ASC')
+        $companySbuData = CompanySbu::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
             ->get();
 
-        $designation_data = Designation::valid()->project()->orderBy('priority', 'ASC')->get();
+        $sectionData = Section::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
 
-        $jobgrade_data = JobGrade::valid()->project()->orderBy('priority', 'ASC')->get();
-        $employee_data = Employee::valid()->project()->get();
-        $sub_unit_data = SubUnit::valid()->project()->orderBy('priority', 'ASC')->get();
-        $work_location_data = WorkLocation::valid()->project()->orderBy('priority', 'ASC')->get();
-        foreach ($company_sbu_data as $value) {
-            array_push($data['company_sbu_data'], ['id' => $value['id'], 'text' => $value['sbu_name']]);
-        }
-        foreach ($section_data as $value) {
-            array_push($data['section_data'], ['id' => $value['id'], 'text' => $value['section_name']]);
-        }
-        foreach ($department_data as $value) {
-            array_push($data['department_data'], ['id' => $value['id'], 'text' => $value['department_name']]);
-        }
-        foreach ($designation_data as $value) {
-            array_push($data['designation_data'], ['id' => $value['id'], 'text' => $value['designation_name']]);
-        }
-        foreach ($jobgrade_data as $value) {
-            array_push($data['jobgrade_data'], ['id' => $value['id'], 'text' => $value['jobgrade_name']]);
-        }
-        foreach ($employee_data as $value) {
-            array_push($data['employee_data'], ['id' => $value['id'], 'text' => $value['employee_fullname']]);
-        }
-        foreach ($sub_unit_data as $value) {
-            array_push($data['sub_unit_data'], ['id' => $value['id'], 'text' => $value['sub_unit_name']]);
-        }
-        foreach ($work_location_data as $value) {
-            array_push($data['work_location_data'], ['id' => $value['id'], 'text' => $value['work_location_name']]);
-        }
-        $data['jc_circular_publish_date'] = date('Y-m-d');
-        $data['jc_circular_expired_date'] = date('Y-m-d');
+        $designationData = Designation::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
 
-        // auth user current sbu
+        $jobgradeData = JobGrade::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $employeeData = Employee::valid()
+            ->project()
+            ->get();
+
+        $subUnitData = SubUnit::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $workLocationData = WorkLocation::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        foreach ($companySbuData as $item) {
+            $data['company_sbu_data'][] = [
+                'id' => $item->id,
+                'text' => $item->sbu_name,
+            ];
+        }
+
+        foreach ($sectionData as $item) {
+            $data['section_data'][] = [
+                'id' => $item->id,
+                'text' => $item->section_name,
+            ];
+        }
+
+        foreach ($designationData as $item) {
+            $data['designation_data'][] = [
+                'id' => $item->id,
+                'text' => $item->designation_name,
+            ];
+        }
+
+        foreach ($jobgradeData as $item) {
+            $data['jobgrade_data'][] = [
+                'id' => $item->id,
+                'text' => $item->jobgrade_name,
+            ];
+        }
+
+        foreach ($employeeData as $item) {
+            $data['employee_data'][] = [
+                'id' => $item->id,
+                'text' => $item->employee_fullname,
+            ];
+        }
+
+        foreach ($subUnitData as $item) {
+            $data['sub_unit_data'][] = [
+                'id' => $item->id,
+                'text' => $item->sub_unit_name,
+            ];
+        }
+
+        foreach ($workLocationData as $item) {
+            $data['work_location_data'][] = [
+                'id' => $item->id,
+                'text' => $item->work_location_name,
+            ];
+        }
+
+        $currentDate = date('Y-m-d');
+
+        $data['jc_circular_publish_date'] = $currentDate;
+        $data['jc_circular_expired_date'] = $currentDate;
+
         $currentSbu = CompanySbu::where('id', $authUser->company_sbu)->first();
-        $data['sbu_name_value'] = ['id' => $currentSbu->id, 'text' => $currentSbu->sbu_name];
 
-        $data['jc_circular_id'] = $this->generateCustomId($currentSbu->id, $currentSbu->sbu_name);
+        $data['sbu_name_value'] = [
+            'id' => $currentSbu ? $currentSbu->id : null,
+            'text' => $currentSbu ? $currentSbu->sbu_name : '',
+        ];
+
+        $data['jc_circular_id'] = $this->generateCustomId($currentSbu->id);
 
         return response($data);
     }
 
-    function generateCustomId($id, $name = 'GEM')
+    function generateCustomId($id)
     {
-        $prefix = strtoupper(substr($name, 0, 3));
-
         $circular = JobCircular::query()
             ->where('jc_company_name', $id)
             ->orderByDesc('id')
             ->first();
 
         if ($circular) {
-            $lastNumber = (int) substr($circular->jc_circular_id, 3);
+            $lastNumber = (int)substr($circular->jc_circular_id, 3);
             $nextNumber = $lastNumber + 1;
         } else {
             $nextNumber = 1;
         }
 
-        $newCustomId = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-
-        return $newCustomId;
+        return 'JOB' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 
     public function store(Request $request)
@@ -217,23 +263,16 @@ class JobCircularController extends Controller
             'jc_company_name' => ['required', 'array'],
             'jc_circular_id' => ['required', 'string'],
             'jc_job_position' => ['required', 'array'],
-//            'jc_job_department' => ['required', 'array'],
             'jc_job_vacancy' => ['required', 'integer'],
             'jc_job_description' => ['nullable', 'string'],
-            // 'jc_job_responsibility' => ['required', 'string'],
-            // 'jc_applied_requirements' => ['required', 'string'],
             'jc_job_nature' => ['required', 'integer'],
-            // 'jc_job_requirements' => ['required', 'string'],
-            // 'jc_educational_requirements' => ['required', 'string'],
-            // 'jc_experience_requirements' => ['required', 'string'],
             'jc_job_location' => ['required', 'array'],
             'jc_salary_range' => ['required', 'string'],
-            // 'jc_other_benefits' => ['required', 'string'],
-            // 'jc_circular_publish_date' => ['required', 'date'],
             'jc_circular_expired_date' => ['required', 'date'],
             'jc_person_assign' => ['required', 'array'],
-            // 'jc_exam_type' => ['required', 'integer'],
             'jc_circular_status' => ['required', 'integer'],
+            'jc_educational_requirements' => ['required', 'string'],
+            'jc_experience_requirements' => ['required', 'string'],
         ];
 
         $data = $request->validate($validate);
@@ -254,12 +293,12 @@ class JobCircularController extends Controller
 
         $circular = JobCircular::create($data);
 
-        $newData = [];
+        // $newData = [];
 
-        $newData['position'] = $request->input('jc_job_position')['text'];
-        $newData['location'] = $request->input('jc_job_location')['text'];
-        $newData['department'] = $request->input('jc_job_department')['text'];
-        $newData['expired_date'] = $request->input('jc_circular_expired_date');
+//        $newData['position'] = $request->input('jc_job_position')['text'];
+//        $newData['location'] = $request->input('jc_job_location')['text'];
+//        $newData['department'] = $request->input('jc_job_department')['text'];
+//        $newData['expired_date'] = $request->input('jc_circular_expired_date');
 
         // $this->mailSend($newData);
 
@@ -272,98 +311,164 @@ class JobCircularController extends Controller
 
     public function edit($id)
     {
-        $data = JobCircular::valid()->project()->orderBy('priority', 'ASC')->findOrFail($id);
-        $companysbu_data_list = CompanySbu::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        $section_data_list = Section::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        $department_list = Department::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        $designation_data_list = Designation::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        $jobgrade_data_list = JobGrade::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        $employee_data_list = Employee::valid()->project()->get()->keyBy('id')->all();
-        $sub_unit_data_list = SubUnit::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        $work_location_data_list = WorkLocation::valid()->project()->orderBy('priority', 'ASC')->get()->keyBy('id')->all();
-        if (!$data->jc_company_name) {
-            $data->sbu_name_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->sbu_name_value = ['id' => $data->jc_company_name, 'text' => $companysbu_data_list[$data->jc_company_name]->sbu_name];
-        }
-        if (!$data->employee_section) {
-            $data->section_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->section_value = ['id' => $data->employee_section, 'text' => $section_data_list[$data->employee_section]->section_name];
-        }
-        if (!$data->employee_department) {
-            $data->department_name_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->department_name_value = ['id' => $data->employee_department, 'text' => $department_list[$data->employee_department]->department_name];
-        }
-        if (!$data->jc_job_position) {
-            $data->designation_name_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->designation_name_value = ['id' => $data->jc_job_position, 'text' => $designation_data_list[$data->jc_job_position]->designation_name];
-        }
-        if (!$data->employee_job_grade) {
-            $data->jobgrade_name_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->jobgrade_name_value = ['id' => $data->employee_job_grade, 'text' => $jobgrade_data_list[$data->employee_job_grade]->jobgrade_name];
-        }
-        if (!$data->jc_person_assign) {
-            $data->employee_name_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->employee_name_value = ['id' => $data->jc_person_assign, 'text' => $employee_data_list[$data->jc_person_assign]->employee_fullname];
-        }
-        if (!$data->employee_sub_unit) {
-            $data->sub_unit_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->sub_unit_value = ['id' => $data->employee_sub_unit, 'text' => $sub_unit_data_list[$data->employee_sub_unit]->sub_unit_name];
-        }
-        if (!$data->employee_work_location) {
-            $data->work_location_value = ['id' => '', 'text' => ''];
-        } else {
-            $data->work_location_value = ['id' => $data->employee_work_location, 'text' => $work_location_data_list[$data->employee_work_location]->work_location_name];
-        }
-        $company_sbu_data = array();
-        $section_data = array();
-        $department_data = array();
-        $designation_data = array();
-        $jobgrade_data = array();
-        $employee_data = array();
-        $sub_unit_data = array();
-        $work_location_data = array();
-        foreach ($companysbu_data_list as $value) {
-            array_push($company_sbu_data, ['id' => $value['id'], 'text' => $value['sbu_name']]);
-        }
-        foreach ($section_data_list as $value) {
-            array_push($section_data, ['id' => $value['id'], 'text' => $value['section_name']]);
-        }
-        foreach ($department_list as $value) {
-            array_push($department_data, ['id' => $value['id'], 'text' => $value['department_name']]);
-        }
-        foreach ($designation_data_list as $value) {
-            array_push($designation_data, ['id' => $value['id'], 'text' => $value['designation_name']]);
-        }
-        foreach ($jobgrade_data_list as $value) {
-            array_push($jobgrade_data, ['id' => $value['id'], 'text' => $value['jobgrade_name']]);
-        }
-        foreach ($employee_data_list as $value) {
-            array_push($employee_data, ['id' => $value['id'], 'text' => $value['employee_fullname']]);
-        }
-        foreach ($sub_unit_data_list as $value) {
-            array_push($sub_unit_data, ['id' => $value['id'], 'text' => $value['sub_unit_name']]);
-        }
-        foreach ($work_location_data_list as $value) {
-            array_push($work_location_data, ['id' => $value['id'], 'text' => $value['department_name']]);
+        $authUser = Auth::guard('user')->user();
+
+        $data = [
+            'company_sbu_data' => [],
+            'section_data' => [],
+            'sub_unit_data' => [],
+            'work_location_data' => [],
+            'department_data' => [],
+            'designation_data' => [],
+            'jobgrade_data' => [],
+            'employee_data' => [],
+        ];
+
+        $data['from_data'] = JobCircular::query()->findOrFail($id);
+
+        $companySbuData = CompanySbu::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $sectionData = Section::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $designationData = Designation::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $jobgradeData = JobGrade::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $employeeData = Employee::valid()
+            ->project()
+            ->get();
+
+        $subUnitData = SubUnit::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        $workLocationData = WorkLocation::valid()
+            ->project()
+            ->orderBy('priority', 'ASC')
+            ->get();
+
+        foreach ($companySbuData as $item) {
+            $data['company_sbu_data'][] = [
+                'id' => $item->id,
+                'text' => $item->sbu_name,
+            ];
         }
 
-        $data->company_sbu_data = $company_sbu_data;
-        $data->section_data = $section_data;
-        $data->department_data = $department_data;
-        $data->designation_data = $designation_data;
-        $data->jobgrade_data = $jobgrade_data;
-        $data->employee_data = $employee_data;
-        $data->sub_unit_data = $sub_unit_data;
-        $data->work_location_data = $work_location_data;
+        foreach ($sectionData as $item) {
+            $data['section_data'][] = [
+                'id' => $item->id,
+                'text' => $item->section_name,
+            ];
+        }
 
-        return response($data);
+        foreach ($designationData as $item) {
+            $data['designation_data'][] = [
+                'id' => $item->id,
+                'text' => $item->designation_name,
+            ];
+        }
+
+        foreach ($jobgradeData as $item) {
+            $data['jobgrade_data'][] = [
+                'id' => $item->id,
+                'text' => $item->jobgrade_name,
+            ];
+        }
+
+        foreach ($employeeData as $item) {
+            $data['employee_data'][] = [
+                'id' => $item->id,
+                'text' => $item->employee_fullname,
+            ];
+        }
+
+        foreach ($subUnitData as $item) {
+            $data['sub_unit_data'][] = [
+                'id' => $item->id,
+                'text' => $item->sub_unit_name,
+            ];
+        }
+
+        foreach ($workLocationData as $item) {
+            $data['work_location_data'][] = [
+                'id' => $item->id,
+                'text' => $item->work_location_name,
+            ];
+        }
+
+        $currentDate = date('Y-m-d');
+
+        $data['jc_circular_publish_date'] = $currentDate;
+        $data['jc_circular_expired_date'] = $currentDate;
+
+        $currentSbu = CompanySbu::where('id', $authUser->company_sbu)->first();
+
+        $data['sbu_name_value'] = [
+            'id' => $currentSbu ? $currentSbu->id : null,
+            'text' => $currentSbu ? $currentSbu->sbu_name : '',
+        ];
+
+        $data['jc_circular_id'] = $this->generateCustomId($currentSbu->id);
+
+        return response()->json($data);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validate = [
+            'jc_company_name' => ['required', 'array'],
+            'jc_circular_id' => ['required', 'string'],
+            'jc_job_position' => ['required', 'array'],
+            'jc_job_vacancy' => ['required', 'integer'],
+            'jc_job_description' => ['nullable', 'string'],
+            'jc_job_nature' => ['required', 'integer'],
+            'jc_job_location' => ['required', 'array'],
+            'jc_salary_range' => ['required', 'string'],
+            'jc_circular_expired_date' => ['required', 'date'],
+            'jc_person_assign' => ['required', 'array'],
+            'jc_circular_status' => ['required', 'integer'],
+            'jc_educational_requirements' => ['required', 'string'],
+            'jc_experience_requirements' => ['required', 'string'],
+        ];
+
+        $data = $request->validate($validate);
+
+        $circular = JobCircular::query()->findOrFail($id);
+
+        $auth = Auth::guard('user')->user();
+
+        $data['jac_status'] = 1;
+        $data['jac_email_send_status'] = 0;
+
+        $data['project_id'] = $auth->project_id;
+        $data['branch_id'] = $auth->branch_id;
+        $data['created_by'] = $auth->id;
+
+        $data['jc_job_position'] = $request->input('jc_job_position')['id'];
+        $data['jc_job_location'] = $request->input('jc_job_location')['id'];
+        $data['jc_company_name'] = $request->input('jc_company_name')['id'];
+        $data['jc_person_assign'] = $request->input('jc_person_assign')['id'];
+
+        $circular->update($data);
+
+        return response([
+            'status' => 1,
+            'data' => $circular,
+            'message' => 'Your data is successfully updated'
+        ]);
     }
 
     public function destroy($id)
@@ -456,6 +561,7 @@ class JobCircularController extends Controller
         $data['professinal_memberships'] = EmployeeProfessionalMembership::valid()->project()->where('epm_employee_id', $id)->get();
         $data['bank_accounts'] = EmployeeBankAccountDetail::valid()->project()->where('ebc_employee_id', $id)->get();
         $data['emergency_contacts'] = EmployeeEmergencyContact::valid()->project()->where('eec_employee_id', $id)->get();
+
         return response($data);
     }
 
@@ -534,7 +640,7 @@ class JobCircularController extends Controller
             ->where('jac_job_circular_id', $circularId)
             // ->where('jac_company_name', $companyId)
             ->when($search, function ($q) use ($search) {
-                $q->where(function($sub) use ($search) {
+                $q->where(function ($sub) use ($search) {
                     $sub->where('jac_candidate_name', 'LIKE', "%{$search}%")
                         ->orWhere('jac_birth_day', 'LIKE', "%{$search}%");
                 });
@@ -551,10 +657,10 @@ class JobCircularController extends Controller
 
         // Total Counts
         $totalCounts = [
-            'applied'     => (clone $query)->count(),
+            'applied' => (clone $query)->count(),
             'shortlisted' => (clone $query)->where('jac_status', 2)->count(),
-            'selected'    => (clone $query)->where('jac_status', 3)->count(),
-            'rejected'    => (clone $query)->where('jac_status', 4)->count(),
+            'selected' => (clone $query)->where('jac_status', 3)->count(),
+            'rejected' => (clone $query)->where('jac_status', 4)->count(),
         ];
 
         if ($status && $status != 1) {
@@ -608,8 +714,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })->where('job_apply_candidates.jac_job_circular_id', $page_ref_id)->where('job_apply_candidates.project_id', $project_id)->orderBy($sort, $order);
@@ -637,8 +742,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -666,8 +770,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -697,8 +800,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -834,7 +936,6 @@ class JobCircularController extends Controller
 
     public function findMarks($candidate_id)
     {
-        // return response($candidate_id);
         $data['candidate_marks'] = DB::table('candidate_interview_marks')
             ->where('cim_candidate_id', $candidate_id)
             ->select(
@@ -846,8 +947,6 @@ class JobCircularController extends Controller
 
     public function get_applicant_data(Request $request)
     {
-        // return response( $request->input('paginate_num'));
-        // return response($request->page_ref_id);
         $candidate_gender = $request->candidate_gender;
         $age_from = $request->age_from;
         $age_to = $request->age_to;
@@ -882,8 +981,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -909,25 +1007,13 @@ class JobCircularController extends Controller
         if (!empty($candidate_education)) {
             $all_candidate_data->orWhere('jac_highest_education', $candidate_education);
         }
+
         $all_candidate_data = $all_candidate_data->orderBy($sort, $order);
-
-
 
         $sortData = $all_candidate_data;
         $sortGetData = $sortData->get();
         $data['all_candidate_count'] = count($sortGetData);
         $data['paginate_data'] = $sortData->paginate($paginate_num);
-
-
-
-
-
-
-
-
-
-
-
 
         ## Shortlisted data
         // $data['shortlist_candidate'] = DB::table('job_apply_candidates')
@@ -946,8 +1032,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -976,8 +1061,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -1007,8 +1091,7 @@ class JobCircularController extends Controller
             ->when($search_key, function ($query, $search_key) {
                 $query->where(function ($query2) use ($search_key) {
                     $query2->where('job_apply_candidates.jac_candidate_name', 'LIKE', '%' . $search_key . '%')
-                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%')
-                    ;
+                        ->orWhere('job_apply_candidates.jac_birth_day', 'LIKE', '%' . $search_key . '%');
                 });
                 return $query;
             })
@@ -1022,8 +1105,8 @@ class JobCircularController extends Controller
         $data['paginate_data3'] = $sortData3->paginate($paginate_num);
 
         $data['rejected_candidate_count'] = DB::table('job_apply_candidates')->where('job_apply_candidates.jac_status', 4)->where('job_apply_candidates.jac_job_circular_id', $page_ref_id)->count();
-        return response($data);
 
+        return response($data);
     }
 
     private function mailSend($data)
@@ -1031,7 +1114,6 @@ class JobCircularController extends Controller
         $jobAlerts = JobAlert::query()->get();
         $talents = Talent::query()->get();
 
-        // JobAlert: email আছে, name নাই
         $emailsFromJobAlerts = $jobAlerts->filter(function ($item) {
             return !empty($item->email);
         })->mapWithKeys(function ($item) {
@@ -1053,10 +1135,10 @@ class JobCircularController extends Controller
         $people = $emailsFromJobAlerts->union($emailsFromTalents);
 
         $mailData = [
-            'position'   => $data['position'],
+            'position' => $data['position'],
             'department' => $data['department'],
-            'location'   => $data['location'],
-            'deadline'   => $data['expired_date'],
+            'location' => $data['location'],
+            'deadline' => $data['expired_date'],
         ];
 
         foreach ($people as $email => $name) {

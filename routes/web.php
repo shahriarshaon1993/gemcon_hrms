@@ -289,6 +289,7 @@ function hrmRoute()
     Route::get('/create/job_circular', 'JobCircularController@create');
     Route::post('/add/job_circular', 'JobCircularController@store');
     Route::get('/edit/job_circular/{id}', 'JobCircularController@edit');
+    Route::put('/update/job_circular/{id}', 'JobCircularController@update');
     Route::delete('/delete/job_circular/{id}', 'JobCircularController@destroy');
 
     Route::get('/job_circular/viewAllJob', 'JobCircularController@viewAllJob');

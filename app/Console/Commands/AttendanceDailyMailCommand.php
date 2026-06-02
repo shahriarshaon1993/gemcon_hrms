@@ -48,12 +48,12 @@ class AttendanceDailyMailCommand extends Command
         $delay = 0;
 
         Employee::where('employee_status', 1)
-            ->whereIn('employee_sbu', [1, 3, 4, 5, 6, 11, 24])
+            ->whereIn('employee_sbu', [5, 6, 24, 22, 23, 28])
             ->where('valid', 1)
             ->where('employee_status', 1)
+            ->where('is_attendance_notify', 0)
             ->where('deleted_at', null)
             ->where('official_email_id', '!=', null)
-            ->where('employee_id_no', 194210)
             ->chunk(10, function ($employees) use ($fromDate, $toDate, &$delay) {
                 foreach ($employees as $employee) {
                     SendAttendanceMailJob::dispatch($employee, $fromDate, $toDate)

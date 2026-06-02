@@ -647,10 +647,7 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-//        return $request->input('floor_number');
-        // return response($request);
         $validate = [
-            // 'employee_id_no' => 'required|unique:employees,employee_id_no,' . $request->id,
             'employee_fullname' => 'required',
             'employee_department' => 'required',
             'employee_dob_certificate' => 'required',
@@ -671,7 +668,9 @@ class EmployeeController extends Controller
             'finger_print',
             'floor_number',
         ];
+
         $request->validate($validate);
+
         $data = $request->only(
             'attendance_bonus_get',
             'employee_salary_type',
@@ -707,9 +706,14 @@ class EmployeeController extends Controller
             'employee_number',
             'proximity_no',
             'finger_print',
-            'floor_number'
+            'floor_number',
+            'is_attendance_notify'
         );
-        // dd($data);
+
+        if ($request->has('is_attendance_notify')) {
+            $data['is_attendance_notify'] = filter_var($request->is_attendance_notify, FILTER_VALIDATE_BOOLEAN);
+        }
+
         if ($request->employee_status == false) {
             $data['employee_status'] = 0;
             $employee_status = 0;
@@ -723,6 +727,7 @@ class EmployeeController extends Controller
         } else {
             $image = '';
         }
+
         if (!empty($image)) {
             $exploded = explode(',', $image);
             if (strlen($request->employee_image) >= 800) {
@@ -743,23 +748,27 @@ class EmployeeController extends Controller
         } else {
             $data['employee_image'] = '';
         }
+
         if ($request['employee_interview_date']) {
             $data['employee_interview_date'] = date('Y-m-d', strtotime($request['employee_interview_date']));
         }
+
         if ($request['employee_appoinment_date']) {
             $data['employee_appoinment_date'] = date('Y-m-d', strtotime($request['employee_appoinment_date']));
         }
+
         if ($request['employee_joining_date']) {
             $data['employee_joining_date'] = date('Y-m-d', strtotime($request['employee_joining_date']));
         }
 
         try {
             DB::beginTransaction();
+
             if (!empty($request->id)) {
                 if ($request->make_user == 1) {
-                    $user = DB::table('users_person')->where('employee_card_no', '=',
-                        $request->employee_id_no)->first();
-                    // return response($user);
+                    $user = DB::table('users_person')
+                        ->where('employee_card_no', '=', $request->employee_id_no)
+                        ->first();
 
                     if (empty($user)) {
                         $user_data['employee_card_no'] = $request->employee_id_no;
@@ -797,21 +806,31 @@ class EmployeeController extends Controller
                         $user_data['department'] = $request->employee_department;
                         $user_data['section'] = $request->employee_section;
                         $user_data['sub_section'] = $request->employee_sub_section;
-                        DB::table('users_person')->where('employee_card_no', '=',
-                            $request->employee_id_no)->update($user_data);
+
+                        DB::table('users_person')
+                            ->where('employee_card_no', '=', $request->employee_id_no)
+                            ->update($user_data);
                     }
                 } else {
-                    DB::table('users_person')->where('employee_card_no', '=', $request->employee_id_no)->delete();
+                    DB::table('users_person')
+                        ->where('employee_card_no', '=', $request->employee_id_no)
+                        ->delete();
                 }
 
                 $update_data = Employee::valid()->project()->findOrFail($request->id);
+
                 $data['updated_by'] = Auth::guard('user')->user()->id;
                 $data['employee_status'] = $employee_status;
+
                 $save_data = $update_data->update($data);
+
                 $approval_infos = collect($request['approval_infos'])->where('ea_approve_by', '!=', '')->toArray();
 
                 if ($approval_infos !== '') {
-                    DB::table('employee_approvals')->where('ea_employee_id', '=', $request->id)->delete();
+                    DB::table('employee_approvals')
+                        ->where('ea_employee_id', '=', $request->id)
+                        ->delete();
+
                     $i = 0;
                     foreach ($approval_infos as $key => $value) {
                         $i++;
@@ -821,6 +840,7 @@ class EmployeeController extends Controller
                         $approval_data['project_id'] = Auth::guard('user')->user()->project_id;
                         $approval_data['branch_id'] = Auth::guard('user')->user()->branch_id;
                         $approval_data['created_by'] = Auth::guard('user')->user()->id;
+
                         DB::table('employee_approvals')->insert($approval_data);
                     }
                 }
@@ -838,8 +858,12 @@ class EmployeeController extends Controller
                 $data['branch_id'] = Auth::guard('user')->user()->branch_id;
                 $data['created_by'] = Auth::guard('user')->user()->id;
                 $save_data = Employee::create($data);
+
                 if ($request->make_user == 1) {
-                    $user = DB::table('users_person')->where('employee_card_no', $request->employee_id_no)->first();
+                    $user = DB::table('users_person')
+                        ->where('employee_card_no', $request->employee_id_no)
+                        ->first();
+
                     if (empty($user)) {
                         $user_data['employee_card_no'] = $save_data->employee_id_no;
                         $user_data['name'] = $request->employee_fullname;
@@ -857,30 +881,40 @@ class EmployeeController extends Controller
                         $user_data['department'] = $request->employee_department;
                         $user_data['section'] = $request->employee_section;
                         $user_data['sub_section'] = $request->employee_sub_section;
-                        // return response($user_data);
+
                         DB::table('users_person')->insert($user_data);
                     }
                 }
-                // return response($save_data->id);
-                $approval_infos = collect($request['approval_infos'])->where('ea_approve_by', '!=', '')->toArray();
+
+                $approval_infos = collect($request['approval_infos'])
+                    ->where('ea_approve_by', '!=', '')
+                    ->toArray();
+
                 if ($approval_infos !== '') {
                     $i = 0;
                     foreach ($approval_infos as $key => $value) {
                         $i++;
-                        // return response($value);
                         $approval_data['ea_employee_id'] = $save_data->id;
                         $approval_data['ea_approval_lavel'] = $i;
                         $approval_data['ea_approve_by'] = $value['ea_approve_by'];
                         $approval_data['project_id'] = Auth::guard('user')->user()->project_id;
                         $approval_data['branch_id'] = Auth::guard('user')->user()->branch_id;
                         $approval_data['created_by'] = Auth::guard('user')->user()->id;
+
                         DB::table('employee_approvals')->insert($approval_data);
                     }
                 }
+
                 $request['id'] = $save_data->id;
                 $this->personalInfoStore($request);
-                $message = ['status' => 1, 'message' => 'Your data is successfully saved', 'data' => $save_data];
+
+                $message = [
+                    'status' => 1,
+                    'message' => 'Your data is successfully saved',
+                    'data' => $save_data
+                ];
             }
+
             DB::commit();
             return response($message);
         } catch (\Exception $exception) {
@@ -2812,32 +2846,6 @@ class EmployeeController extends Controller
 
     public function personalInfoStore(Request $request)
     {
-        // $validate=[
-        //   'salary_duration_type'=>'required',
-        //   'attendance_bonus_get'=>'required',
-        //   'employee_salary_type'=>'required',
-        //   'employee_reporting_to'=>'required',
-
-        //   'employee_joining_date'=>'required',
-        //   'employee_dob_certificate'=>'required',
-        //   'emplyee_category_mgt_non_mgt'=>'required',
-        //   'employee_type'=>'required',
-        //   'employee_department'=>'required',
-        //   'employee_sbu'=>'required',
-        //   'employee_job_grade'=>'required',
-        //   'employee_designation'=>'required',
-        //   'employee_blood_group'=>'required',
-        //   'employee_gender'=>'required',
-        //   'employee_mother_name'=>'required',
-
-
-        // ];
-        // $request->validate($validate);
-        // this. uris=URL.baseUrl('').split('/');
-        // $request->id
-        // return $_SERVER['PHP_SELF'];
-
-
         $data = $request->only(
             'employee_nid_name',
             'employee_nid_name_bangla',
@@ -2871,8 +2879,6 @@ class EmployeeController extends Controller
         }
 
         $salariy = DB::table('salaries')->where('employee_id', '=', $request->id)->first();
-
-        dd($salariy);
 
         if (!empty($salariy)) {
             if ($request->gross_salary_bangla > 0 && $request->gross_salary_bangla_text != '') {

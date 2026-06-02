@@ -51,7 +51,7 @@ class AttendanceDailyMailCommand extends Command
             ->whereIn('employee_sbu', [5, 6, 24, 22, 23, 28])
             ->where('valid', 1)
             ->where('employee_status', 1)
-            ->where('is_attendance_notify', 0)
+            ->where('is_attendance_notify', 1)
             ->where('deleted_at', null)
             ->where('official_email_id', '!=', null)
             ->chunk(10, function ($employees) use ($fromDate, $toDate, &$delay) {
